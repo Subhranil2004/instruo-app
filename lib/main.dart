@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/login_page.dart'; // Import your login page
 import 'home_page.dart';
 
 void main() {
@@ -12,7 +13,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'College Fest',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomePage(),
+      home: LoginPage(), // Start with login page
+      routes: {
+        '/home': (context) => HomePage(), // For navigation after login/skip
+        '/login': (context) => LoginPage(), // Optional: if you need back to login
+      },
     );
   }
 }

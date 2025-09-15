@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'event_type_page.dart';
 import 'widgets/app_drawer.dart';
 
+import 'events/technical_page.dart';
+import 'events/robotics_page.dart';
+import 'events/gaming_page.dart';
+import 'events/general_page.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -22,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("College Fest"),
+        title: Text("INSTRUO'14"),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
@@ -50,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               Image.asset("assets/fest_logo.png", height: 100),
               SizedBox(height: 10),
               Text(
-                "College Fest 2025",
+                "INSTRUO 2025",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ],
@@ -84,12 +89,27 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: GestureDetector(
                     onTap: () {
+                      Widget nextPage;
+                      switch (event["title"]) {
+                        case "Technical":
+                          nextPage = TechnicalPage();
+                          break;
+                        case "Robotics":
+                          nextPage = RoboticsPage();
+                          break;
+                        case "Gaming":
+                          nextPage = GamingPage();
+                          break;
+                        case "General":
+                          nextPage = GeneralPage();
+                          break;
+                        default:
+                          nextPage = EventTypePage(title: event["title"]!);
+                      }
+
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EventTypePage(title: event["title"]!),
-                        ),
+                        MaterialPageRoute(builder: (context) => nextPage),
                       );
                     },
                     child: Card(
