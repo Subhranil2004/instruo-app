@@ -8,6 +8,8 @@ class RoboticsPage extends StatelessWidget {
     {"name": "Line Follower", "image": "assets/fest.png"},
   ];
 
+  // const RoboticsPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class RoboticsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final event = roboticsEvents[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 30.0),
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),

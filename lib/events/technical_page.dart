@@ -37,7 +37,7 @@ class TechnicalPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final event = technicalEvents[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 30.0),
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
