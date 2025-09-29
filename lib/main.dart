@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_page.dart'; // Import your login page
 import 'home_page.dart';
+import 'theme/theme.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'College Fest',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: AppTheme.lightTheme,
       home: LoginPage(), // Start with login page
       routes: {
         '/home': (context) => HomePage(), // For navigation after login/skip
