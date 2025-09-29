@@ -4,6 +4,7 @@ import 'package:instruo_application/events/general_page.dart';
 import 'package:instruo_application/events/robotics_page.dart';
 import 'package:instruo_application/events/technical_page.dart';
 import 'package:instruo_application/home_page.dart';
+import 'package:instruo_application/screens/sponsor_page.dart';
 import '../contact/contact_us.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -76,6 +77,16 @@ class AppDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => GamingPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.work),
+            title: Text("Sponsors"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SponsorsPage()),
               );
             },
           ),
