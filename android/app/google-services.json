@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "564095148919",
+    "project_id": "instruo-app-a7e9b",
+    "storage_bucket": "instruo-app-a7e9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564095148919:android:3facdd94b3d8dad2f1f772",
+        "android_client_info": {
+          "package_name": "com.example.instruo_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc6af0T-u-Y6hGhCaXWRbsIts47j8Ukhk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

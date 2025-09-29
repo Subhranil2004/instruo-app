@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
+import '../widgets/events_bottom_nav.dart';
 
 class GamingPage extends StatelessWidget {
   final List<Map<String, String>> gamingEvents = [
@@ -75,6 +76,7 @@ class GamingPage extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: const EventsBottomNav(currentIndex: 3),
     );
   }
 }
