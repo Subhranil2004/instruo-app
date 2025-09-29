@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../events/technical_page.dart';
-import '../events/general_page.dart';
-import '../events/robotics_page.dart';
-import '../events/gaming_page.dart';
-
 /// Bottom navigation used across event pages: Technical, General, Robotics, Gaming
+///
+/// Usage:
+///   Scaffold(
+///     // ...
+///     bottomNavigationBar: EventsBottomNav(currentIndex: 0),
+///   );
+/// Set `currentIndex` to the active tab: 0=Technical, 1=General, 2=Robotics, 3=Gaming.
 class EventsBottomNav extends StatelessWidget {
   final int currentIndex; // 0: Technical, 1: General, 2: Robotics, 3: Gaming
 
@@ -14,27 +16,25 @@ class EventsBottomNav extends StatelessWidget {
   void _navigate(BuildContext context, int index) {
     if (index == currentIndex) return; // no-op if already on the tab
 
-    Widget target;
+    String routeName;
     switch (index) {
       case 0:
-        target = TechnicalPage();
+        routeName = '/events/technical';
         break;
       case 1:
-        target = GeneralPage();
+        routeName = '/events/general';
         break;
       case 2:
-        target = RoboticsPage();
+        routeName = '/events/robotics';
         break;
       case 3:
       default:
-        target = GamingPage();
+        routeName = '/events/gaming';
         break;
     }
 
     // Replace to avoid stacking multiple pages while switching tabs
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => target),
-    );
+    Navigator.of(context).pushReplacementNamed(routeName);
   }
 
   @override

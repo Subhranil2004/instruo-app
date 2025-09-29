@@ -26,13 +26,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final Color bgTop = isDark ? AppTheme.surfaceDark : AppTheme.backgroundLight;
+    final Color bgBottom = isDark ? AppTheme.backgroundDark : AppTheme.backgroundGradientEnd;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "INSTRUO'14",
-          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
-        ),
+        title: const Text("INSTRUO'14"),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -58,9 +58,9 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: AppDrawer(),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppTheme.backgroundLight, AppTheme.backgroundGradientEnd],
+            colors: [bgTop, bgBottom],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                     "INSTRUO 2025",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      shadows: const [
+                      shadows: [
                         Shadow(
                           blurRadius: 6,
                           color: Colors.black26,
