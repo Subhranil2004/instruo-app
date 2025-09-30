@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instruo_application/widgets/custom_app_bar.dart';
 
 class SponsorsPage extends StatelessWidget {
   // Placeholder list of sponsors
@@ -24,9 +25,9 @@ class SponsorsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sponsors'),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: "SPONSORS",
+        showBackButton: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

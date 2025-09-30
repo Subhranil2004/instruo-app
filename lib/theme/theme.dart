@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Colors
-  static const Color primaryPurple = Color.fromARGB(255, 176, 65, 255);
-  static const Color secondaryBlue = Color(0xFF4A90E2);
+  static const Color primaryBlue = Color(0xFF4A90E2);
+  static const Color secondaryPurple= Color.fromARGB(255, 176, 65, 255);
   static const Color backgroundLight = Color(0xFFF8F9FB);
   static const Color backgroundGradientEnd = Color(0xFFECE9F1);
   static const Color textPrimary = Color(0xFF1C1C1E);
@@ -17,7 +17,7 @@ class AppTheme {
 
   // Gradient
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryPurple, secondaryBlue],
+    colors: [primaryBlue, secondaryPurple, primaryBlue],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -26,23 +26,50 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: backgroundLight,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryPurple,
-      primary: primaryPurple,
-      secondary: secondaryBlue,
+      seedColor: primaryBlue,
+      primary: primaryBlue,
+      secondary: secondaryPurple,
     ),
     fontFamily: GoogleFonts.poppins().fontFamily,
 
     // AppBar theme
     appBarTheme: const AppBarTheme(
-      backgroundColor: primaryPurple,
+      backgroundColor: primaryBlue,
       foregroundColor: Colors.white,
       elevation: 0,
+      iconTheme: IconThemeData(
+        color: Colors.white,
+        size: 24,
+      ),
+      actionsIconTheme: IconThemeData(
+        color: Colors.white,
+        size: 24,
+      ),
+    ),
+
+    // PopupMenuButton theme
+    popupMenuTheme: PopupMenuThemeData(
+      color: Colors.white,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      textStyle: GoogleFonts.poppins(
+        color: textPrimary,
+        fontSize: 16,
+      ),
+    ),
+
+    // Icon theme for primary themed icons
+    iconTheme: const IconThemeData(
+      color: primaryBlue,
+      size: 20,
     ),
 
     // BottomNavigationBar theme
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: primaryPurple,
+      selectedItemColor: primaryBlue,
       unselectedItemColor: textSecondary,
       selectedIconTheme: IconThemeData(size: 24),
       unselectedIconTheme: IconThemeData(size: 22),
@@ -63,7 +90,7 @@ class AppTheme {
     // ElevatedButton theme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryPurple,
+        backgroundColor: primaryBlue,
         foregroundColor: Colors.white,
         textStyle: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
@@ -113,19 +140,38 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: backgroundDark,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryPurple,
+      seedColor: primaryBlue,
       brightness: Brightness.dark,
-      primary: primaryPurple,
-      secondary: secondaryBlue,
+      primary: primaryBlue,
+      secondary: secondaryPurple,
       background: backgroundDark,
       surface: surfaceDark,
     ),
     fontFamily: GoogleFonts.poppins().fontFamily,
 
-    appBarTheme: const AppBarTheme(
-      backgroundColor: surfaceDark,
-      foregroundColor: Colors.white,
-      elevation: 0,
+    // appBarTheme: const AppBarTheme(
+    //   backgroundColor: surfaceDark,
+    //   foregroundColor: Colors.white,
+    //   elevation: 0,
+    // ),
+
+    // PopupMenuButton theme for dark mode
+    popupMenuTheme: PopupMenuThemeData(
+      color: surfaceDark,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      textStyle: GoogleFonts.poppins(
+        color: textPrimaryDark,
+        fontSize: 16,
+      ),
+    ),
+
+    // Icon theme for primary themed icons in dark mode
+    iconTheme: const IconThemeData(
+      color: primaryBlue,
+      size: 20,
     ),
 
     cardTheme: CardThemeData(
@@ -139,7 +185,7 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryPurple,
+        backgroundColor: primaryBlue,
         foregroundColor: Colors.white,
         textStyle: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
@@ -153,7 +199,7 @@ class AppTheme {
 
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: surfaceDark,
-      selectedItemColor: primaryPurple,
+      selectedItemColor: primaryBlue,
       unselectedItemColor: textSecondaryDark,
       selectedIconTheme: const IconThemeData(size: 24),
       unselectedIconTheme: const IconThemeData(size: 22),

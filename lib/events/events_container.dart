@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:instruo_application/theme/theme.dart';
 import '../widgets/app_drawer.dart';
+import '../widgets/custom_app_bar.dart';
 import 'technical_content.dart';
 import 'general_content.dart';
 import 'robotics_content.dart';
@@ -35,30 +35,9 @@ class _EventsContainerState extends State<EventsContainer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("EVENTS"),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-          ),
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'profile') {
-                // TODO: Navigate to profile page
-              } else if (value == 'logout') {
-                // TODO: Handle logout
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'profile', child: Text('Profile')),
-              const PopupMenuItem(value: 'logout', child: Text('Logout')),
-            ],
-            icon: const Icon(Icons.account_circle),
-          ),
-        ],
+      appBar: const CustomAppBar(
+        title: "EVENTS",
+        showBackButton: false,
       ),
       drawer: AppDrawer(),
       body: IndexedStack(

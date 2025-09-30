@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'screens/login_page.dart'; // Import your login page
-import 'home_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:instruo_application/home_page.dart';
+import 'package:instruo_application/firebase_options.dart';
 import 'theme/theme.dart';
-import 'events/events_container.dart';
 
-void main() {
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -17,13 +23,8 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: LoginPage(), // Start with login page
-      routes: {
-        '/home': (context) => HomePage(), // For navigation after login/skip
-        '/login': (context) => LoginPage(), // Optional: if you need back to login
-        // Events container - handles internal tab navigation
-        '/events': (context) => const EventsContainer(),
-      },
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
+      home: HomePage(), // Start with login page
     );
   }
 }

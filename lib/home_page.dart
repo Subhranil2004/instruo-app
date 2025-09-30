@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:instruo_application/widgets/custom_app_bar.dart';
 import 'event_type_page.dart';
 import 'widgets/app_drawer.dart';
 import 'events/events_container.dart';
 import 'theme/theme.dart';
+import 'helper/helper_functions.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,6 +15,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController(viewportFraction: 0.8);
   int _currentPage = 0;
+  User? currentUser;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCurrentUser();
+  }
+
+  void _checkCurrentUser() async {
+    currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      userData = await AppBarAuthHelper.loadUserData(currentUser);
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 
   final List<Map<String, String>> eventTypes = [
     {"title": "Technical", "image": "assets/tech.png"},
@@ -28,30 +49,9 @@ class _HomePageState extends State<HomePage> {
     final Color bgBottom = isDark ? AppTheme.backgroundDark : AppTheme.backgroundGradientEnd;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("INSTRUO'14"),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-          ),
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'profile') {
-                // TODO: Navigate to profile page
-              } else if (value == 'logout') {
-                // TODO: Handle logout
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'profile', child: Text('Profile')),
-              const PopupMenuItem(value: 'logout', child: Text('Logout')),
-            ],
-            icon: const Icon(Icons.account_circle),
-          ),
-        ],
+      appBar: const CustomAppBar(
+        title: "HOME",
+        showBackButton: false,
       ),
       drawer: AppDrawer(),
       body: Container(

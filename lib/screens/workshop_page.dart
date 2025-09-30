@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:instruo_application/theme/theme.dart';
 import '../widgets/app_drawer.dart';
-import '../widgets/events_bottom_nav.dart';
+import '../widgets/custom_app_bar.dart';
 
-class WorkshopsPage extends StatelessWidget {
+class WorkshopsPage extends StatefulWidget {
+  const WorkshopsPage({super.key});
+
+  @override
+  State<WorkshopsPage> createState() => _WorkshopsPageState();
+}
+
+class _WorkshopsPageState extends State<WorkshopsPage> {
   final List<Map<String, String>> workshopEvents = [
     {"name": "Flutter Workshop", "image": "assets/fest.png"},
     {"name": "Dart Workshop", "image": "assets/fest.png"},
@@ -13,30 +19,9 @@ class WorkshopsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("EVENTS"),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-          ),
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'profile') {
-                // TODO: Navigate to profile page
-              } else if (value == 'logout') {
-                // TODO: Handle logout
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'profile', child: Text('Profile')),
-              const PopupMenuItem(value: 'logout', child: Text('Logout')),
-            ],
-            icon: const Icon(Icons.account_circle),
-          ),
-        ],
+      appBar: const CustomAppBar(
+        title: "WORKSHOPS",
+        showBackButton: false,
       ),
       drawer: AppDrawer(),
       body: Column(

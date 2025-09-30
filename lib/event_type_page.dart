@@ -1,10 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'widgets/app_drawer.dart';
+import 'helper/helper_functions.dart';
 
-class EventTypePage extends StatelessWidget {
+class EventTypePage extends StatefulWidget {
   final String title;
 
-  EventTypePage({required this.title});
+  const EventTypePage({super.key, required this.title});
+
+  @override
+  State<EventTypePage> createState() => _EventTypePageState();
+}
+
+class _EventTypePageState extends State<EventTypePage> {
+  User? currentUser;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCurrentUser();
+  }
+
+  void _checkCurrentUser() async {
+    currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      userData = await AppBarAuthHelper.loadUserData(currentUser);
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 
   // Dummy event data for now (replace with Firestore later)
   final List<Map<String, String>> sampleEvents = [
@@ -17,28 +43,25 @@ class EventTypePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'profile') {
-                // TODO: Navigate to profile page
-              } else if (value == 'logout') {
-                // TODO: Handle logout
+            onSelected: (value) => AppBarAuthHelper.handleMenuAction(
+              value, 
+              context, 
+              onStateChange: () {
+                setState(() {
+                  currentUser = null;
+                  userData = null;
+                });
+                _checkCurrentUser();
               }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'profile',
-                child: Text('Profile'),
-              ),
-              PopupMenuItem(
-                value: 'logout',
-                child: Text('Logout'),
-              ),
-            ],
-            icon: Icon(Icons.account_circle),
+            ),
+            itemBuilder: (context) => AppBarAuthHelper.buildMenuItems(currentUser, userData),
+            icon: Icon(
+              currentUser != null ? Icons.account_circle : Icons.account_circle_outlined,
+            ),
           ),
         ],
       ),

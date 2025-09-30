@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instruo_application/home_page.dart';
+import 'package:instruo_application/screens/profile_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
 import 'package:instruo_application/screens/workshop_page.dart';
 import '../contact/contact_us.dart';
@@ -111,7 +112,7 @@ class AppDrawer extends StatelessWidget {
       required String text,
       required VoidCallback onTap}) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.primaryPurple),
+      leading: Icon(icon, color: AppTheme.primaryBlue),
       title: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
