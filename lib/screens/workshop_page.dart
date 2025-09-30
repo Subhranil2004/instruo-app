@@ -1,28 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:instruo_application/theme/theme.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/events_bottom_nav.dart';
 
-class GamingPage extends StatelessWidget {
-  final List<Map<String, String>> gamingEvents = [
-    {"name": "BGMI Tournament", "image": "assets/fest.png"},
-    {"name": "FIFA Challenge", "image": "assets/fest.png"},
-    {"name": "Valorant Cup", "image": "assets/fest.png"},
+class WorkshopsPage extends StatelessWidget {
+  final List<Map<String, String>> workshopEvents = [
+    {"name": "Flutter Workshop", "image": "assets/fest.png"},
+    {"name": "Dart Workshop", "image": "assets/fest.png"},
+    {"name": "Firebase Workshop", "image": "assets/fest.png"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Gaming Events"),
+        title: const Text("EVENTS"),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+        ),
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) {},
+            onSelected: (value) {
+              if (value == 'profile') {
+                // TODO: Navigate to profile page
+              } else if (value == 'logout') {
+                // TODO: Handle logout
+              }
+            },
             itemBuilder: (context) => [
-              PopupMenuItem(value: 'profile', child: Text('Profile')),
-              PopupMenuItem(value: 'logout', child: Text('Logout')),
+              const PopupMenuItem(value: 'profile', child: Text('Profile')),
+              const PopupMenuItem(value: 'logout', child: Text('Logout')),
             ],
-            icon: Icon(Icons.account_circle),
+            icon: const Icon(Icons.account_circle),
           ),
         ],
       ),
@@ -32,10 +44,10 @@ class GamingPage extends StatelessWidget {
           SizedBox(height: 20),
           Expanded(
             child: PageView.builder(
-              itemCount: gamingEvents.length,
+              itemCount: workshopEvents.length,
               controller: PageController(viewportFraction: 0.85),
               itemBuilder: (context, index) {
-                final event = gamingEvents[index];
+                final event = workshopEvents[index];
                 return Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 30.0),
                   child: Card(
@@ -61,10 +73,7 @@ class GamingPage extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             event["name"]!,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                       ],
@@ -76,7 +85,7 @@ class GamingPage extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const EventsBottomNav(currentIndex: 3),
+      // bottomNavigationBar: const EventsBottomNav(currentIndex: 1),
     );
   }
 }

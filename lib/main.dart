@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/login_page.dart'; // Import your login page
 import 'home_page.dart';
 import 'theme/theme.dart';
-import 'events/technical_page.dart';
-import 'events/general_page.dart';
-import 'events/robotics_page.dart';
-import 'events/gaming_page.dart';
+import 'events/events_container.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,11 +21,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => HomePage(), // For navigation after login/skip
         '/login': (context) => LoginPage(), // Optional: if you need back to login
-        // Event pages (used by bottom navigation)
-        '/events/technical': (context) => TechnicalPage(),
-        '/events/general': (context) => GeneralPage(),
-        '/events/robotics': (context) => RoboticsPage(),
-        '/events/gaming': (context) => GamingPage(),
+        // Events container - handles internal tab navigation
+        '/events': (context) => const EventsContainer(),
       },
     );
   }

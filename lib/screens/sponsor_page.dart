@@ -60,9 +60,7 @@ class SponsorsPage extends StatelessWidget {
                   SizedBox(height: 8),
                   Text(
                     sponsor['name']!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 8),
                 ],

@@ -45,8 +45,8 @@ class ContactUsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: ListTile(
-              title: Text(contact.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(contact.role),
+              title: Text(contact.name, style: Theme.of(context).textTheme.titleMedium),
+              subtitle: Text(contact.role, style: Theme.of(context).textTheme.bodySmall),
               trailing: IconButton(
                 icon: const Icon(Icons.phone, color: Colors.green),
                 onPressed: () => _launchDialer(contact.phone),

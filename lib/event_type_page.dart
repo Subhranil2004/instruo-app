@@ -77,10 +77,7 @@ class EventTypePage extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             event["name"]!,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                       ],

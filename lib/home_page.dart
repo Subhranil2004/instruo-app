@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'event_type_page.dart';
 import 'widgets/app_drawer.dart';
-import 'events/technical_page.dart';
-import 'events/robotics_page.dart';
-import 'events/gaming_page.dart';
-import 'events/general_page.dart';
+import 'events/events_container.dart';
 import 'theme/theme.dart';
 
 class HomePage extends StatefulWidget {
@@ -120,28 +117,35 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: GestureDetector(
                       onTap: () {
-                        Widget nextPage;
+                        int initialIndex;
                         switch (event["title"]) {
                           case "Technical":
-                            nextPage = TechnicalPage();
-                            break;
-                          case "Robotics":
-                            nextPage = RoboticsPage();
-                            break;
-                          case "Gaming":
-                            nextPage = GamingPage();
+                            initialIndex = 0;
                             break;
                           case "General":
-                            nextPage = GeneralPage();
+                            initialIndex = 1;
+                            break;
+                          case "Robotics":
+                            initialIndex = 2;
+                            break;
+                          case "Gaming":
+                            initialIndex = 3;
                             break;
                           default:
-                            nextPage =
-                                EventTypePage(title: event["title"]!);
+                            // Fallback to EventTypePage for unknown types
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EventTypePage(title: event["title"]!)),
+                            );
+                            return;
                         }
 
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => nextPage),
+                          MaterialPageRoute(
+                            builder: (context) => EventsContainer(initialIndex: initialIndex),
+                          ),
                         );
                       },
                       child: Card(

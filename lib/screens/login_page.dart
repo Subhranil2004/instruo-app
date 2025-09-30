@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 10),
                 Text(
                   "INSTRUO 2025",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 SizedBox(height: 30),
                 Form(

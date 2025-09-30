@@ -26,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(height: 10),
                 Text(
                   "INSTRUO 2025",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 30),
                 Form(

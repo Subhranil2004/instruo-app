@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:instruo_application/events/gaming_page.dart';
-import 'package:instruo_application/events/general_page.dart';
-import 'package:instruo_application/events/robotics_page.dart';
-import 'package:instruo_application/events/technical_page.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
+import 'package:instruo_application/screens/workshop_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
+import '../events/events_container.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -59,45 +57,23 @@ class AppDrawer extends StatelessWidget {
           ),
           _buildDrawerItem(
             context,
-            icon: Icons.code,
-            text: "Technical",
+            icon: Icons.event,
+            text: "Events",
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TechnicalPage()),
+                MaterialPageRoute(builder: (context) => const EventsContainer(initialIndex: 0)),
               );
             },
           ),
           _buildDrawerItem(
             context,
-            icon: Icons.music_note,
-            text: "General",
+            icon: Icons.work,
+            text: "Workshops",
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => GeneralPage()),
-              );
-            },
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.smart_toy,
-            text: "Robotics",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RoboticsPage()),
-              );
-            },
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.sports_esports,
-            text: "Gaming",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => GamingPage()),
+                MaterialPageRoute(builder: (context) => WorkshopsPage()),
               );
             },
           ),
