@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'events_model.dart';
+import 'events_info.dart';
 
 class GeneralContent extends StatelessWidget {
-  final List<Map<String, String>> generalEvents = [
-    {"name": "Quiz Competition", "image": "assets/fest.png"},
-    {"name": "Treasure Hunt", "image": "assets/fest.png"},
-    {"name": "Debate", "image": "assets/fest.png"},
-  ];
+  final List<Event> generalEvents =
+    events.where((event) => event.category == "general").toList();
 
   GeneralContent({super.key});
 
@@ -35,7 +34,7 @@ class GeneralContent extends StatelessWidget {
                             top: Radius.circular(20),
                           ),
                           child: Image.asset(
-                            event["image"]!,
+                            event.image,
                             fit: BoxFit.cover,
                             width: double.infinity,
                           ),
@@ -44,7 +43,7 @@ class GeneralContent extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          event["name"]!,
+                          event.name,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),

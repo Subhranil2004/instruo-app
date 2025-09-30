@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'events_model.dart';
+import 'events_info.dart';
 
 class RoboticsContent extends StatelessWidget {
-  final List<Map<String, String>> roboticsEvents = [
-    {"name": "Robo Race", "image": "assets/fest.png"},
-    {"name": "Robo Soccer", "image": "assets/fest.png"},
-    {"name": "Line Follower", "image": "assets/fest.png"},
-  ];
+  final List<Event> roboticsEvents =
+    events.where((event) => event.category == "robotics").toList();
 
   RoboticsContent({super.key});
 
@@ -35,7 +34,7 @@ class RoboticsContent extends StatelessWidget {
                             top: Radius.circular(20),
                           ),
                           child: Image.asset(
-                            event["image"]!,
+                            event.image,
                             fit: BoxFit.cover,
                             width: double.infinity,
                           ),
@@ -44,7 +43,7 @@ class RoboticsContent extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          event["name"]!,
+                          event.name,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
