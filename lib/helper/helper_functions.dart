@@ -9,10 +9,7 @@ void displayMessageToUser(String message, BuildContext context, {bool isError = 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(message),
-      // behavior: SnackBarBehavior.floating,
-      // margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
       backgroundColor: isError ? Colors.red : null,
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       duration: Duration(seconds: durationSeconds),
     ),
   );

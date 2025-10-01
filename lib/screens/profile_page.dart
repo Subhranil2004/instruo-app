@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/widgets/custom_app_bar.dart';
+import 'package:instruo_application/widgets/my_textfield.dart';
+import 'package:instruo_application/helper/helper_functions.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -83,9 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _departmentController.text.trim().isEmpty ||
           _selectedYear == null ||
           (!_isIIESTian && _collegeController.text.trim().isEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please fill all required fields")),
-        );
+        displayMessageToUser("Please fill all required fields", context);
         return;
       }
 
@@ -103,16 +103,12 @@ class _ProfilePageState extends State<ProfilePage> {
           'collegeName': _isIIESTian ? "IIEST" : _collegeController.text.trim(),
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
-        );
+        displayMessageToUser('✅ Profile updated successfully!', context, isError: false);
         setState(() {
           _isEditing = false;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update profile.')),
-        );
+        displayMessageToUser('Failed to update profile.', context);
       } finally {
         setState(() => _isLoading = false);
       }
@@ -174,26 +170,32 @@ class _ProfilePageState extends State<ProfilePage> {
                   _isEditing
                       ? Column(
                           children: [
-                            TextFormField(
-                              controller: _phoneController,
-                              decoration: const InputDecoration(
-                                labelText: 'Phone Number',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.phone,
-                            ),
+                            // TextFormField(
+                            //   controller: _phoneController,
+                            //   decoration: const InputDecoration(
+                            //     labelText: 'Phone Number',
+                            //     border: OutlineInputBorder(),
+                            //   ),
+                            //   keyboardType: TextInputType.phone,
+                            // ),
+                            MyTextField(labelText: 'Phone Number', 
+                            hintText: '1234567890',
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                          ),
                             const SizedBox(height: 15),
-                            TextFormField(
-                              controller: _departmentController,
-                              decoration: const InputDecoration(
-                                labelText: 'Department',
-                                hintText: 'Enter in CAPS (e.g., CST, IT)',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
+                            // TextFormField(
+                            //   controller: _departmentController,
+                            //   decoration: const InputDecoration(
+                            //     labelText: 'Department',
+                            //     hintText: 'Enter CAPS abbr. (e.g., CST, IT)',
+                            //     border: OutlineInputBorder(),
+                            //   ),
+                            // ),
+                            MyTextField(hintText: 'Enter CAPS abbr. (e.g., CST, IT)', labelText: 'Department', controller: _departmentController, keyboardType: TextInputType.text,),
                             const SizedBox(height: 15),
                             DropdownButtonFormField<String>(
-                              value: _selectedYear,
+                              initialValue: _selectedYear,
                               items: _yearOptions
                                   .map((year) => DropdownMenuItem(
                                       value: year, child: Text(year)))
@@ -203,9 +205,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   _selectedYear = value;
                                 });
                               },
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Year',
-                                border: OutlineInputBorder(),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0),),
                               ),
                             ),
                             const SizedBox(height: 15),
@@ -222,13 +224,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               Column(
                                 children: [
                                   const SizedBox(height: 10),
-                                  TextFormField(
-                                    controller: _collegeController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'College Name',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
+                                  // TextFormField(
+                                  //   controller: _collegeController,
+                                  //   decoration: const InputDecoration(
+                                  //     labelText: 'College Name',
+                                  //     border: OutlineInputBorder(),
+                                  //   ),
+                                  // ),
+                                  MyTextField(hintText: 'College Name', controller: _collegeController, labelText: 'College Name',),
                                 ],
                               ),
                           ],

@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 
 class MyTextField extends StatelessWidget {
   final String hintText;
+  final String? labelText;
   final bool obscureText;
   final TextEditingController controller;
+  final TextInputType keyboardType;
   const MyTextField({
     super.key,
     required this.hintText,
-    required this.obscureText,
+    this.labelText,
+    this.obscureText = false,
     required this.controller,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -19,8 +23,9 @@ class MyTextField extends StatelessWidget {
       controller: controller,
       style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
-        labelText: hintText,
-        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+        hintText: hintText,
+        labelText: labelText?.isEmpty == true ? hintText : labelText,
+        // labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
@@ -30,6 +35,7 @@ class MyTextField extends StatelessWidget {
           borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2.0),
         ),
       ),
+      keyboardType: keyboardType,
     );
   }
 }
