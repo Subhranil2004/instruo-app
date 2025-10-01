@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instruo_application/widgets/custom_app_bar.dart';
-import 'event_type_page.dart';
 import 'widgets/app_drawer.dart';
 import 'events/events_container.dart';
 import 'theme/theme.dart';
@@ -132,12 +131,6 @@ class _HomePageState extends State<HomePage> {
                             initialIndex = 3;
                             break;
                           default:
-                            // Fallback to EventTypePage for unknown types
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EventTypePage(title: event["title"]!)),
-                            );
                             return;
                         }
 

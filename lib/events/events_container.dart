@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/custom_app_bar.dart';
-import 'technical_content.dart';
-import 'general_content.dart';
-import 'robotics_content.dart';
-import 'gaming_content.dart';
+import 'event_content.dart'; // Import the single, consolidated widget
 
-/// Container widget that holds all event pages with smooth bottom nav transitions
+/// Container widget that holds all event pages with smooth transitions
 /// and a constant "EVENTS" app bar. Uses IndexedStack to keep all pages in memory.
 class EventsContainer extends StatefulWidget {
   final int initialIndex;
@@ -19,6 +16,14 @@ class EventsContainer extends StatefulWidget {
 
 class _EventsContainerState extends State<EventsContainer> {
   late int _currentIndex;
+
+  // Define the list of event categories here
+  final List<String> _eventCategories = [
+    'technical',
+    'general',
+    'robotics',
+    'gaming',
+  ];
 
   @override
   void initState() {
@@ -42,12 +47,9 @@ class _EventsContainerState extends State<EventsContainer> {
       drawer: AppDrawer(),
       body: IndexedStack(
         index: _currentIndex,
-        children: [
-          TechnicalContent(),
-          GeneralContent(),
-          RoboticsContent(),
-          GamingContent(),
-        ],
+        children: _eventCategories.map((category) {
+          return EventContent(category: category); // Use the single widget for all categories
+        }).toList(),
       ),
       bottomNavigationBar: EventsBottomNavLocal(
         currentIndex: _currentIndex,

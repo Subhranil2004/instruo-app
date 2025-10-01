@@ -200,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             MyTextField(hintText: 'Enter CAPS abbr. (e.g., CST, IT)', labelText: 'Department', controller: _departmentController, keyboardType: TextInputType.text,),
                             const SizedBox(height: 15),
                             DropdownButtonFormField<String>(
-                              initialValue: _selectedYear,
+                              value: _selectedYear,
                               items: _yearOptions
                                   .map((year) => DropdownMenuItem(
                                       value: year, child: Text(year)))
