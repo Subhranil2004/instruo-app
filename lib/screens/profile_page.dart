@@ -3,21 +3,136 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/widgets/custom_app_bar.dart';
 
-class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-  // current logged in user
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
-  // future to get user details
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
+  // Controllers
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
+  final TextEditingController _collegeController = TextEditingController();
+
+  String? _selectedYear;
+  bool _isIIESTian = true;
+  bool _isLoading = false;
+  bool _isDataLoaded = false;
+  bool _isEditing = false;
+  
+  String _userName = ''; // New state variable for the user's name
+
+  final List<String> _yearOptions = [
+    "UG1", "UG2", "UG3", "UG4", "UG5",
+    "PG1", "PG2", "PhD"
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserDetails();
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _departmentController.dispose();
+    _collegeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchUserDetails() async {
     if (currentUser != null) {
-      return await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(currentUser!.email)
-          .get();
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(currentUser!.email)
+            .get();
+
+        if (doc.exists) {
+          var userData = doc.data();
+          setState(() {
+            _userName = userData?['name'] ?? 'N/A'; // Fetch the name
+            _phoneController.text = userData?['phone'] ?? '';
+            _departmentController.text = userData?['department'] ?? '';
+            String? firestoreYear = userData?['year'];
+            if (firestoreYear != null && _yearOptions.contains(firestoreYear)) {
+              _selectedYear = firestoreYear;
+            }
+            _isIIESTian = userData?['iiestian'] ?? true;
+            _collegeController.text = userData?['collegeName'] ?? '';
+            _isDataLoaded = true;
+          });
+        }
+      } catch (e) {
+        print("Error fetching user details: $e");
+        setState(() {
+          _isDataLoaded = true;
+        });
+      }
     }
-    throw Exception('User not logged in');
+  }
+
+  Future<void> updateProfile() async {
+    if (currentUser != null) {
+      if (_phoneController.text.trim().isEmpty ||
+          _departmentController.text.trim().isEmpty ||
+          _selectedYear == null ||
+          (!_isIIESTian && _collegeController.text.trim().isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please fill all required fields")),
+        );
+        return;
+      }
+
+      setState(() => _isLoading = true);
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(currentUser!.email)
+            .update({
+          'phone': _phoneController.text.trim(),
+          'department': _departmentController.text.trim(),
+          'year': _selectedYear,
+          'iiestian': _isIIESTian,
+          'collegeName': _isIIESTian ? "IIEST" : _collegeController.text.trim(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully!')),
+        );
+        setState(() {
+          _isEditing = false;
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile.')),
+        );
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Widget _buildDataRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
   }
 
   @override
@@ -28,32 +143,127 @@ class ProfilePage extends StatelessWidget {
         showBackButton: true,
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Center(
-        child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          future: getUserDetails(),
-          builder: (context, snapshot) {
-            
-            if (snapshot.connectionState == ConnectionState.waiting) { // loading state
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) { // error state
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData && snapshot.data!.exists) { // data state
-              var userData = snapshot.data!.data();
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: !_isDataLoaded
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
                 children: [
-                  Icon(Icons.account_circle, size: 100, color: Theme.of(context).colorScheme.inversePrimary),
+                  const Icon(Icons.account_circle, size: 100),
                   const SizedBox(height: 20),
-                  Text('Name: ${userData?['name'] ?? 'N/A'}'),
-                  Text('Email: ${userData?['email'] ?? 'N/A'}'),
+                  
+                  // Display the name here
+                  Center(
+                    child: Text(
+                      _userName,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Center(
+                    child: Text(
+                      "Email: ${currentUser?.email ?? ''}",
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  
+                  _isEditing
+                      ? Column(
+                          children: [
+                            TextFormField(
+                              controller: _phoneController,
+                              decoration: const InputDecoration(
+                                labelText: 'Phone Number',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.phone,
+                            ),
+                            const SizedBox(height: 15),
+                            TextFormField(
+                              controller: _departmentController,
+                              decoration: const InputDecoration(
+                                labelText: 'Department',
+                                hintText: 'Enter in CAPS (e.g., CST, IT)',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            DropdownButtonFormField<String>(
+                              value: _selectedYear,
+                              items: _yearOptions
+                                  .map((year) => DropdownMenuItem(
+                                      value: year, child: Text(year)))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedYear = value;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'Year',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            SwitchListTile(
+                              title: const Text("Are you from IIEST?"),
+                              value: _isIIESTian,
+                              onChanged: (val) {
+                                setState(() {
+                                  _isIIESTian = val;
+                                });
+                              },
+                            ),
+                            if (!_isIIESTian)
+                              Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  TextFormField(
+                                    controller: _collegeController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'College Name',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildDataRow('Phone Number', _phoneController.text),
+                            _buildDataRow('Department', _departmentController.text),
+                            if (_selectedYear != null)
+                              _buildDataRow('Year', _selectedYear!),
+                            _buildDataRow('College', _isIIESTian ? "IIEST" : _collegeController.text),
+                          ],
+                        ),
+                  
+                  const SizedBox(height: 25),
+                  
+                  _isEditing
+                      ? ElevatedButton(
+                          onPressed: _isLoading ? null : updateProfile,
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text("Save"),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _isEditing = true;
+                            });
+                          },
+                          child: const Text("Edit"),
+                        ),
                 ],
-              );
-            } else {
-              return const Text('No user data found');
-            }
-          },
-        ),
-      ),
+              ),
+            ),
     );
   }
 }
