@@ -128,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'email': email,
           'phone': '', // To be filled later from profile page
           'iiestian': true, // Default to true, can be updated later
-          'collegeName': '', // To be filled later from profile page
+          'collegeName': 'IIEST', // To be filled later from profile page
           'year': '', // To be filled later from profile page
           'department': '', // Optional
           'isCoordinator': false, // Default to false, can be updated later
@@ -232,7 +232,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Text("Already have an account?", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                     GestureDetector(
                       onTap: widget.onTap,
-                      child: const Text('   Login Here', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(' Login Here', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),

@@ -245,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text("Don't have an account?", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                     GestureDetector(
                       onTap: widget.onTap,
-                      child: const Text('   Register Here', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(' Register Here', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
