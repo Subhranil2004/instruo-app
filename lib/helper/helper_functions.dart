@@ -5,15 +5,15 @@ import '../auth/auth.dart';
 import '../screens/profile_page.dart';
 
 // Function to display a message to the user
-void displayMessageToUser(String message, BuildContext context, {bool isError = true}) {
+void displayMessageToUser(String message, BuildContext context, {bool isError = true, int durationSeconds = 2}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(message),
-      behavior: SnackBarBehavior.floating,
+      // behavior: SnackBarBehavior.floating,
       // margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
-      backgroundColor: isError ? Colors.red : Colors.green,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      duration: const Duration(seconds: 2),
+      backgroundColor: isError ? Colors.red : null,
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      duration: Duration(seconds: durationSeconds),
     ),
   );
 }

@@ -33,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     if (nameController.text.trim().length < 3) {
-      displayMessageToUser('Username must be at least 3 characters long', context);
+      displayMessageToUser('Name must be at least 3 characters long', context);
       return;
     }
 
@@ -96,16 +96,17 @@ class _RegisterPageState extends State<RegisterPage> {
       if (context.mounted) {
         displayMessageToUser(errorMessage, context);
       }
-    } catch (e) {
-      // // Close loading dialog
-      // if (context.mounted) {
-      //   Navigator.pop(context);
-      // }
+    } 
+    // catch (e) {
+    //   // // Close loading dialog
+    //   // if (context.mounted) {
+    //   //   Navigator.pop(context);
+    //   // }
       
-      if (context.mounted) {
-        displayMessageToUser('An unexpected error occurred. Please try again.', context);
-      }
-    }
+    //   if (context.mounted) {
+    //     displayMessageToUser('An unexpected error occurred. Please try again.', context);
+    //   }
+    // }
   }
 
   void skipRegister() {
@@ -142,14 +143,13 @@ class _RegisterPageState extends State<RegisterPage> {
             .doc(email) // Use email as the document ID
             .set(userData);
 
-        if (context.mounted) {
-          rootScaffoldMessengerKey.currentState?.showSnackBar(
-            const SnackBar( // TODO: Snackbar isn't showing up after registration
-              content: Text('✅ Registered successfully\nℹ️ Fill profile details before event registration'),
-              duration: Duration(seconds: 6),
-            ),
-          );
-        }
+        rootScaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar( // TODO: Snackbar isn't showing up after registration
+            content: Text('✅ Registered successfully\nℹ️ Fill profile details before event registration'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+
       } catch (e) {
         displayMessageToUser('Error creating user document: $e', context);
         
