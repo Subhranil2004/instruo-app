@@ -89,6 +89,11 @@ class _ProfilePageState extends State<ProfilePage> {
         return;
       }
 
+      if(_phoneController.text.trim().length != 10 || int.tryParse(_phoneController.text.trim()) == null) {
+        displayMessageToUser("Please enter a valid 10-digit phone number", context);
+        return;
+      }
+
       setState(() => _isLoading = true);
 
       try {
@@ -161,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Center(
                     child: Text(
                       "Email: ${currentUser?.email ?? ''}",
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
 

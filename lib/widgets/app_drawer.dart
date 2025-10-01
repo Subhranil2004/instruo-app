@@ -6,6 +6,7 @@ import 'package:instruo_application/screens/workshop_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
 import '../events/events_container.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -27,17 +28,25 @@ class AppDrawer extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 36,
-                  backgroundImage: const AssetImage("assets/fest_logo.png"),
-                  backgroundColor: Colors.transparent,
+                // CircleAvatar(
+                //   radius: 36,
+                //   backgroundImage: const AssetImage("assets/fest_logo.png"),
+                //   backgroundColor: Colors.transparent,
+                // ),
+                
+                SvgPicture.asset(
+                  'assets/instruo-gif.svg',
+                  width: 100, // Optional: specify width
+                  height: 100, // Optional: specify height
+                  // fit: BoxFit.contain, // Optional: how the SVG should fit
+                  // colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn), // Optional: apply a color filter
                 ),
-                const SizedBox(height: 12),
+                // const SizedBox(height: 12),
                 Text(
                   "INSTRUO'14",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
                       ),
                 ),
               ],
