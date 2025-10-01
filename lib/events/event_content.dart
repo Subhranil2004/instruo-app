@@ -26,14 +26,13 @@ class EventContent extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: PageView.builder(
-        scrollDirection: Axis.vertical,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
         itemCount: filteredEvents.length,
-        controller: PageController(viewportFraction: 0.70),
         itemBuilder: (context, index) {
           final event = filteredEvents[index];
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -50,32 +49,32 @@ class EventContent extends StatelessWidget {
                 elevation: 6,
                 clipBehavior: Clip.hardEdge,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      flex: 8,
+                    SizedBox(
+                      height: 250,                                // change image size accordingly
+                      width: double.infinity,
                       child: Image.asset(
                         event.image,
                         fit: BoxFit.cover,
-                        width: double.infinity,
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Center(
-                        child: Text(
-                          event.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                          textAlign: TextAlign.center,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        event.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
               ),
+
             ),
           );
         },
-      ),
+      )
     );
   }
 }
