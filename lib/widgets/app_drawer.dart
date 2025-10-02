@@ -33,20 +33,20 @@ class AppDrawer extends StatelessWidget {
                 //   backgroundImage: const AssetImage("assets/fest_logo.png"),
                 //   backgroundColor: Colors.transparent,
                 // ),
-                
+                // Image.asset("assets/instruo-gif.gif", height: 80),
                 SvgPicture.asset(
                   'assets/instruo-gif.svg',
                   width: 100, // Optional: specify width
                   height: 100, // Optional: specify height
                   // fit: BoxFit.contain, // Optional: how the SVG should fit
-                  // colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn), // Optional: apply a color filter
+                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn), // Optional: apply a color filter
                 ),
                 // const SizedBox(height: 12),
                 Text(
                   "INSTRUO'14",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        // fontWeight: FontWeight.w500,
                       ),
                 ),
               ],

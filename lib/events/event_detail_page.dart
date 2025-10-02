@@ -12,15 +12,62 @@ class EventDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // Details, Rules, Coordinators, Register
+      length: 3, // Details, Rules, Coordinators
       child: Scaffold(
         // ✅ Top AppBar
-        appBar: const CustomAppBar(
-          title: "INSTRUO'14",
+        appBar: CustomAppBar(
+          title: event.name,
         ),
 
         // ✅ Left drawer (sidebar)
         drawer: AppDrawer(),
+
+        // ✅ Floating circular register button with label
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+                Material(
+                elevation: 6,
+                shape: const CircleBorder(),
+                color: Colors.transparent,
+                child: Container(
+                height: 70,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  // gradient: AppTheme.primaryGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // Add your registration logic here
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Registering for ${event.name}..."),
+                        backgroundColor: AppTheme.primaryBlue,
+                      ),
+                    );
+                  },
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: const Icon(
+                    Icons.person_add,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ),
+            ),
+              const SizedBox(height: 4),
+              Text(
+                "Register",
+                style: Theme.of(context).popupMenuTheme.textStyle
+              ),
+            ],
+          ),
+        ),
 
         body: Column(
           children: [
@@ -41,12 +88,11 @@ class EventDetailPage extends StatelessWidget {
               child: TabBar(
                 indicatorColor: AppTheme.primaryBlue,      // underline for selected tab
                 labelColor: AppTheme.primaryBlue,          // selected tab text color
-                unselectedLabelColor: AppTheme.textSecondary, // unselected tab text color
+                unselectedLabelColor: Theme.of(context).popupMenuTheme.textStyle?.color, // unselected tab text color
                 tabs: const [
                   Tab(text: "Details"),
                   Tab(text: "Rules"),
                   Tab(text: "Coordinators"),
-                  Tab(text: "Register"),
                 ],
               ),
             ),
@@ -72,19 +118,6 @@ class EventDetailPage extends StatelessWidget {
                   SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(event.category),
-                  ),
-
-                  // Register tab
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add your registration logic here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Registering for ${event.name}...")),
-                        );
-                      },
-                      child: const Text("Register Now"),
-                    ),
                   ),
                 ],
               ),

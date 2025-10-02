@@ -9,6 +9,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final List<Widget>? extraActions;
   final VoidCallback? onBackPressed;
   final bool centerTitle;
+  final bool showProfileButton;
 
   const CustomAppBar({
     super.key,
@@ -16,7 +17,8 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.showBackButton = true,
     this.extraActions,
     this.onBackPressed,
-    this.centerTitle = true,
+    this.centerTitle = false,
+    this.showProfileButton = true,
   });
 
   @override
@@ -51,9 +53,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return AppBar(
       title: Text(
         widget.title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
           color: Colors.white,
-          fontWeight: FontWeight.w600,
+          // fontWeight: FontWeight.w900,
         ),
       ),
       centerTitle: widget.centerTitle,
@@ -76,7 +78,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         if (widget.extraActions != null) ...widget.extraActions!,
         
         // Authentication menu
-        widget.showBackButton
+        widget.showProfileButton == false
           ? const SizedBox.shrink() // No auth menu on pages with back button
           : PopupMenuButton<String>(
           onSelected: (value) => AppBarAuthHelper.handleMenuAction(

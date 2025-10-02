@@ -17,7 +17,7 @@ class AppTheme {
 
   // Gradient
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryBlue, secondaryPurple, primaryBlue],
+    colors: [primaryBlue, secondaryPurple],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -111,7 +111,7 @@ class AppTheme {
       ),
       headlineMedium: GoogleFonts.poppins(
         fontSize: 24,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         color: textPrimary,
       ),
       titleLarge: GoogleFonts.poppins(
@@ -216,7 +216,7 @@ class AppTheme {
       ),
       headlineMedium: GoogleFonts.poppins(
         fontSize: 24,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         color: textPrimaryDark,
       ),
       titleLarge: GoogleFonts.poppins(

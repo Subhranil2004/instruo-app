@@ -28,6 +28,7 @@ class SponsorsPage extends StatelessWidget {
       appBar: const CustomAppBar(
         title: "SPONSORS",
         showBackButton: true,
+        showProfileButton: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

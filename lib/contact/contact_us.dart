@@ -35,6 +35,7 @@ class ContactUsPage extends StatelessWidget {
       appBar: const CustomAppBar(
         title: "CONTACT US",
         showBackButton: true,
+        showProfileButton: false,
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0, bottom: 10.0),

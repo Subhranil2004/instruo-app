@@ -106,6 +106,9 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => _isLoading = true);
 
       try {
+        String collegeName = _isIIESTian ? "IIEST" : _collegeController.text.trim();
+        bool isIIESTian = _isIIESTian || collegeName.toUpperCase() == "IIEST";
+        
         await FirebaseFirestore.instance
             .collection('Users')
             .doc(currentUser!.email)
@@ -113,8 +116,8 @@ class _ProfilePageState extends State<ProfilePage> {
           'phone': _phoneController.text.trim(),
           'department': _departmentController.text.trim(),
           'year': _selectedYear,
-          'iiestian': _isIIESTian,
-          'collegeName': _isIIESTian ? "IIEST" : _collegeController.text.trim(),
+          'iiestian': isIIESTian,
+          'collegeName': collegeName,
         });
 
         displayMessageToUser('✅ Profile updated successfully!', context, isError: false);
@@ -151,6 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: const CustomAppBar(
         title: "PROFILE",
         showBackButton: true,
+        showProfileButton: false,
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
@@ -183,73 +187,82 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 20),
                     
                     _isEditing
-                        ? Column(
-                            children: [
-                              MyTextField(
-                                labelText: 'Phone Number',
-                                hintText: '1234567890',
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                              ),
-                              const SizedBox(height: 15),
-                              MyTextField(
-                                hintText: 'Enter CAPS abbr. (e.g., CST, IT)',
-                                labelText: 'Department',
-                                controller: _departmentController,
-                                keyboardType: TextInputType.text,
-                              ),
-                              const SizedBox(height: 15),
-                              DropdownButtonFormField<String>(
-                                value: _selectedYear,
-                                items: _yearOptions
-                                    .map((year) => DropdownMenuItem(
-                                        value: year, child: Text(year)))
-                                    .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedYear = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Year',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12.0),
+                        ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                              children: [
+                                MyTextField(
+                                  labelText: 'Phone Number',
+                                  hintText: '1234567890',
+                                  controller: _phoneController,
+                                  keyboardType: TextInputType.phone,
+                                ),
+                                const SizedBox(height: 15),
+                                MyTextField(
+                                  hintText: 'Enter CAPS abbr. (e.g., CST, IT)',
+                                  labelText: 'Department',
+                                  controller: _departmentController,
+                                  keyboardType: TextInputType.text,
+                                ),
+                                const SizedBox(height: 15),
+                                DropdownButtonFormField<String>(
+                                  value: _selectedYear,
+                                  items: _yearOptions
+                                      .map((year) => DropdownMenuItem(
+                                          value: year, child: Text(year)))
+                                      .toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedYear = value;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'Year',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              SwitchListTile(
-                                title: const Text("Are you from IIEST?"),
-                                value: _isIIESTian,
-                                onChanged: (val) {
-                                  setState(() {
-                                    _isIIESTian = val;
-                                  });
-                                },
-                              ),
-                              if (!_isIIESTian)
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    MyTextField(
-                                      hintText: 'College Name',
-                                      controller: _collegeController,
-                                      labelText: 'College Name',
-                                    ),
-                                  ],
+                                const SizedBox(height: 15),
+                                SwitchListTile(
+                                  title: const Text("Are you from IIEST?"),
+                                  value: _isIIESTian,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _isIIESTian = val;
+                                    });
+                                  },
                                 ),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildDataRow('Phone Number', _phoneController.text),
-                              _buildDataRow('Department', _departmentController.text),
-                              if (_selectedYear != null)
-                                _buildDataRow('Year', _selectedYear!),
-                              _buildDataRow('College', _isIIESTian ? "IIEST" : _collegeController.text),
-                            ],
-                          ),
+                                if (!_isIIESTian)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        MyTextField(
+                                          hintText: 'College Name',
+                                          controller: _collegeController,
+                                          labelText: 'College Name',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                        )
+                        : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildDataRow('Phone Number', _phoneController.text),
+                                _buildDataRow('Department', _departmentController.text),
+                                if (_selectedYear != null)
+                                  _buildDataRow('Year', _selectedYear!),
+                                _buildDataRow('College', _isIIESTian ? "IIEST" : _collegeController.text),
+                              ],
+                            ),
+                        ),
                     
                     const SizedBox(height: 25),
                     
@@ -275,7 +288,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         "Coordinating Events",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                      const Divider(),
+                      const Divider(
+                        indent: 18.0,
+                        endIndent: 18.0,
+                      ),
                       if (_coordinatingEvents.isEmpty)
                         const Text("No events assigned yet.")
                       else
