@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/widgets/custom_app_bar.dart';
 import 'package:instruo_application/widgets/my_textfield.dart';
 import 'package:instruo_application/helper/helper_functions.dart';
+import '../theme/theme.dart';
 
 import '../events/events_info.dart';
 import '../events/events_model.dart';
@@ -292,21 +293,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         indent: 18.0,
                         endIndent: 18.0,
                       ),
-                      if (_coordinatingEvents.isEmpty)
+                      if (_coordinatingEventsIds.isNotEmpty && _coordinatingEventsIds.first == "all")
+                        // Aesthetic banner for full-access coordinators
+                        gigaCoordinatorBanner(context)
+                      else if (_coordinatingEvents.isEmpty)
                         const Text("No events assigned yet.")
                       else
-                        // Corrected: Use an Expanded widget to allow scrolling within the Column.
-                        ListView.builder(
-                          shrinkWrap: true, // This is crucial for nesting
-                          physics: const NeverScrollableScrollPhysics(), // Prevents scrolling for the inner ListView
-                          itemCount: _coordinatingEvents.length,
-                          itemBuilder: (context, index) {
-                            final event = _coordinatingEvents[index];
-                            return ListTile(
-                              title: Text(event.name),
-                              trailing: Text(event.category.toUpperCase()), 
-                            );
-                          },
+                        // Make only the list scrollable by bounding its height
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: SizedBox(
+                            // Make height adaptive to screen size so only this list scrolls
+                            height: MediaQuery.of(context).size.height * 0.35, // ~40% of screen height
+                            child: ListView.builder(
+                              // Let this ListView handle its own scrolling
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _coordinatingEvents.length,
+                              itemBuilder: (context, index) {
+                                final event = _coordinatingEvents[index];
+                                return ListTile(
+                                  title: Text(event.name),
+                                  trailing: Text(event.category.toUpperCase()), 
+                                );
+                              },
+                            ),
+                          ),
                         ),
                     ], 
                   ],
@@ -314,5 +325,42 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
       ),
     );
+  }
+
+  Container gigaCoordinatorBanner(BuildContext context) {
+    return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryBlue.withOpacity(0.25),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            child: const Icon(Icons.workspace_premium, color: Colors.white),
+                          ),
+                          title: Text(
+                            "Giga Coordinator",
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                          subtitle: Text(
+                            "Access to all events ✨",
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.white.withOpacity(0.95),
+                                ),
+                          ),
+                          trailing: const Icon(Icons.verified, color: Colors.white),
+                        ),
+                      );
   }
 }
