@@ -110,7 +110,7 @@ class AppTheme {
         color: textPrimary,
       ),
       headlineMedium: GoogleFonts.poppins(
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: FontWeight.w400,
         color: textPrimary,
       ),
@@ -215,7 +215,7 @@ class AppTheme {
         color: textPrimaryDark,
       ),
       headlineMedium: GoogleFonts.poppins(
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: FontWeight.w400,
         color: textPrimaryDark,
       ),

@@ -9,6 +9,39 @@ import '../events/events_container.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AppDrawer extends StatelessWidget {
+  void _onTapNavigate(
+    /*
+    Closes the drawer
+    Checks the current route name to prevent duplicate pushes
+    Builds a route with RouteSettings(name: routeName)
+    Navigates using:
+      pushAndRemoveUntil when resetStack is true (Home)
+      pushReplacement otherwise (Events, Workshops, Sponsors, Contact)
+    */
+    BuildContext context,
+    String routeName,
+    WidgetBuilder builder, {
+    bool resetStack = false,
+  }) {
+    // Close the drawer first
+    Navigator.pop(context);
+
+    // Avoid pushing if we're already on the destination
+    final currentName = ModalRoute.of(context)?.settings.name;
+    if (currentName == routeName) return;
+
+    final route = MaterialPageRoute(
+      settings: RouteSettings(name: routeName),
+      builder: builder,
+    );
+
+    if (resetStack) {
+      Navigator.pushAndRemoveUntil(context, route, (Route<dynamic> r) => false);
+    } else {
+      Navigator.pushReplacement(context, route);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -57,46 +90,42 @@ class AppDrawer extends StatelessWidget {
             context,
             icon: Icons.home,
             text: "Home",
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-                (Route<dynamic> route) => false,
-              );
-            },
+            onTap: () => _onTapNavigate(
+              context,
+              '/home',
+              (ctx) => HomePage(),
+              resetStack: true,
+            ),
           ),
           _buildDrawerItem(
             context,
             icon: Icons.event,
             text: "Events",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EventsContainer(initialIndex: 0)),
-              );
-            },
+            onTap: () => _onTapNavigate(
+              context,
+              '/events',
+              (ctx) => const EventsContainer(initialIndex: 0),
+            ),
           ),
           _buildDrawerItem(
             context,
             icon: Icons.work,
             text: "Workshops",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => WorkshopsPage()),
-              );
-            },
+            onTap: () => _onTapNavigate(
+              context,
+              '/workshops',
+              (ctx) => WorkshopsPage(),
+            ),
           ),
           _buildDrawerItem(
             context,
             icon: Icons.star,
             text: "Sponsors",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SponsorsPage()),
-              );
-            },
+            onTap: () => _onTapNavigate(
+              context,
+              '/sponsors',
+              (ctx) => SponsorsPage(),
+            ),
           ),
 
           const Divider(),
@@ -104,12 +133,11 @@ class AppDrawer extends StatelessWidget {
             context,
             icon: Icons.contact_mail,
             text: "Contact Us",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ContactUsPage()),
-              );
-            },
+            onTap: () => _onTapNavigate(
+              context,
+              '/contact',
+              (ctx) => ContactUsPage(),
+            ),
           ),
         ],
       ),
