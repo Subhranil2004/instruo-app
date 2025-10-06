@@ -144,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
             .set(userData);
 
         rootScaffoldMessengerKey.currentState?.showSnackBar(
-          const SnackBar( // TODO: Snackbar isn't showing up after registration
+          const SnackBar( 
             content: Text('✅ Registered successfully\nℹ️ Fill profile details before event registration'),
             duration: Duration(seconds: 5),
           ),
