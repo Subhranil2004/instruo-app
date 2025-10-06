@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instruo_application/home_page.dart';
-import 'package:instruo_application/screens/profile_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
-import 'package:instruo_application/screens/workshop_page.dart';
+import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
 import '../events/events_container.dart';
@@ -110,11 +109,11 @@ class AppDrawer extends StatelessWidget {
           _buildDrawerItem(
             context,
             icon: Icons.work,
-            text: "Workshops",
+            text: "Timeline",
             onTap: () => _onTapNavigate(
               context,
-              '/workshops',
-              (ctx) => WorkshopsPage(),
+              '/timeline/day1',
+              (ctx) => const TimelinePage(dayIndex: 0),
             ),
           ),
           _buildDrawerItem(

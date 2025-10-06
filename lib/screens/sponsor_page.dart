@@ -25,9 +25,12 @@ class SponsorsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar:  CustomAppBar(
         title: "SPONSORS",
         showBackButton: true,
+        onBackPressed: () {
+          Navigator.pushReplacementNamed(context, '/home'); // Navigate to the home route
+        },
         showProfileButton: false,
       ),
       body: Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/firebase_options.dart';
+import 'package:instruo_application/screens/timeline/timeline_page.dart';
 import 'theme/theme.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
@@ -24,7 +25,14 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       scaffoldMessengerKey: rootScaffoldMessengerKey,
-      home: HomePage(), // Start with login page
+      home: HomePage(), // Start with Home page
+      routes: {
+        '/home': (context) => HomePage(), // Add this
+        '/timeline/day1': (context) => const TimelinePage(dayIndex: 0),
+        '/timeline/day2': (context) => const TimelinePage(dayIndex: 1),
+        '/timeline/day3': (context) => const TimelinePage(dayIndex: 2),
+      },
+
     );
   }
 }
