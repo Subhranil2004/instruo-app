@@ -4,6 +4,7 @@ class Event {
   final String name;
   final String image;
   final String description;
+  final int minTeamSize;
   final int maxTeamSize;
   final int fee;
 
@@ -13,6 +14,7 @@ class Event {
     required this.name,
     required this.image,
     required this.description,
+    required this.minTeamSize,
     required this.maxTeamSize,
     this.fee = 0,
   });
@@ -24,6 +26,7 @@ class Event {
       "name": name,
       "image": image,
       "description": description,
+      "minTeamSize": minTeamSize,
       "maxTeamSize": maxTeamSize,
       "fee": fee,
     };
@@ -36,6 +39,7 @@ class Event {
       name: map["name"] ?? "",
       image: map["image"] ?? "",
       description: map["description"] ?? "",
+      minTeamSize: map["minTeamSize"] ?? 1,
       maxTeamSize: map["maxTeamSize"] ?? 1,
       fee: map["fee"] ?? 0,
     );
