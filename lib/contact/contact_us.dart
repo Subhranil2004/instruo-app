@@ -4,6 +4,7 @@ import 'package:instruo_application/widgets/custom_app_bar.dart';
 import 'contact_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../widgets/app_drawer.dart';
 
 class ContactUsPage extends StatelessWidget {
   const ContactUsPage({Key? key}) : super(key: key);
@@ -34,9 +35,10 @@ class ContactUsPage extends StatelessWidget {
     return Scaffold(
       appBar: const CustomAppBar(
         title: "CONTACT US",
-        showBackButton: true,
+        showBackButton: false,
         showProfileButton: false,
       ),
+      drawer: AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0, bottom: 10.0),
         child: ListView.builder(

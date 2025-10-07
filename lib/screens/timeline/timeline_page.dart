@@ -32,12 +32,13 @@ class TimelinePage extends StatelessWidget {
     return Scaffold(
        appBar:  CustomAppBar(
         title: "TIMELINE",
-        showBackButton: true,
-        onBackPressed: () {
-          Navigator.pushReplacementNamed(context, '/home'); // Navigate to the home route
-        },
+        showBackButton: false,
+        // onBackPressed: () {
+        //   Navigator.pushReplacementNamed(context, '/home'); // Navigate to the home route
+        // },
         showProfileButton: false,
       ),
+      drawer: AppDrawer(),
       bottomNavigationBar: TimelineBottomNav(currentIndex: dayIndex),
       body: SafeArea(
         child: Padding(

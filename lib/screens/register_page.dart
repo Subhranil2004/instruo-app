@@ -134,6 +134,8 @@ class _RegisterPageState extends State<RegisterPage> {
           'department': '', // Optional
           'isCoordinator': false, // Default to false, can be updated later
           'coordinatingEvents': <String>[], // Empty list, to be filled later from profile page
+          'eventsRegistered': <String>[],
+          'profileImageUrl': '',
           'uid': userCredential.user!.uid,
           'createdAt': FieldValue.serverTimestamp(),
         };
