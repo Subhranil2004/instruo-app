@@ -1,13 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
 import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
 import '../events/events_container.dart';
+import '../screens/coordinator/coordinating_events_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
+  const AppDrawer({super.key});
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  bool _isCoordinator = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCoordinatorStatus();
+  }
+
+  Future<void> _checkCoordinatorStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.email)
+            .get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data();
+          final isCoordinator = userData?['isCoordinator'] ?? false;
+          setState(() {
+            _isCoordinator = isCoordinator;
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   void _onTapNavigate(
     /*
     Closes the drawer
@@ -126,6 +177,21 @@ class AppDrawer extends StatelessWidget {
               (ctx) => SponsorsPage(),
             ),
           ),
+
+          // Coordinator Section (only visible to coordinators)
+          if (_isCoordinator && !_isLoading) ...[
+            const Divider(),
+            _buildDrawerItem(
+              context,
+              icon: Icons.manage_accounts,
+              text: "Coordinating Events",
+              onTap: () => _onTapNavigate(
+                context,
+                '/coordinator/events',
+                (ctx) => const CoordinatingEventsPage(),
+              ),
+            ),
+          ],
 
           const Divider(),
           _buildDrawerItem(
