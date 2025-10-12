@@ -201,47 +201,43 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
     try {
       final firestore = FirebaseFirestore.instance;
-      
-      // Create team document
-      final teamDoc = await firestore.collection('Teams').add({
+
+      // Use a single batched write to create the team and update Events and Users
+      final batch = firestore.batch();
+
+      // Create a new Team document with a generated ID and include tid in the document
+      final teamRef = firestore.collection('Teams').doc(); // generated id
+      final teamId = teamRef.id;
+      final teamData = {
         'name': _teamNameController.text.trim(),
         'members': [currentUser!.email!, ..._selectedMembers.map((m) => m['email']).toList()],
-        // use uid instead?
         'lead': currentUser!.email!,
         'eventId': widget.event.id,
         'createdAt': FieldValue.serverTimestamp(),
-      });
-      
-      final teamId = teamDoc.id;
-      
-      // Update the team document with its own ID
-      await teamDoc.update({'tid': teamId});
-      
-      // Update Events collection - add team to event's teams list
-      final eventDoc = firestore.collection('Events').doc(widget.event.id);
-      await eventDoc.set({
+        'tid': teamId,
+      };
+      batch.set(teamRef, teamData);
+
+      // Update Events collection - add team id to event's teams array (merge)
+      final eventRef = firestore.collection('Events').doc(widget.event.id);
+      batch.set(eventRef, {
         'teams': FieldValue.arrayUnion([teamId])
       }, SetOptions(merge: true));
-      
-      // Update Users collection - add event to each member's eventsRegistered list
-      // Note: Commented out as Users collection doesn't have this field yet
-      /////////////////////////////////////////////////
-      final batch = firestore.batch();
-      
-      // Add event to current user's eventsRegistered
-      final currentUserDoc = firestore.collection('Users').doc(currentUser!.email!);
-      batch.update(currentUserDoc, {
+
+      // Update Users collection - add event to each member's eventsRegistered list (merge)
+      final currentUserRef = firestore.collection('Users').doc(currentUser!.email!);
+      batch.set(currentUserRef, {
         'eventsRegistered': FieldValue.arrayUnion([widget.event.id])
-      });
-      
-      // Add event to each team member's eventsRegistered
+      }, SetOptions(merge: true));
+
       for (final member in _selectedMembers) {
-        final memberDoc = firestore.collection('Users').doc(member['email']);
-        batch.update(memberDoc, {
+        final memberRef = firestore.collection('Users').doc(member['email']);
+        batch.set(memberRef, {
           'eventsRegistered': FieldValue.arrayUnion([widget.event.id])
-        });
+        }, SetOptions(merge: true));
       }
-      
+
+      // Commit all writes in one atomic operation
       await batch.commit();
       //////////////////////////////////////////////
       
@@ -253,7 +249,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       
       Navigator.pop(context);
     } catch (e) {
-      displayMessageToUser("Registration failed: $e", context);
+      displayMessageToUser("Registration failed: $e", context, durationSeconds: 6);
     } finally {
       setState(() {
         _isRegistering = false;

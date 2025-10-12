@@ -8,7 +8,7 @@ import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
 import '../events/events_container.dart';
-import '../screens/coordinator/coordinating_events_page.dart';
+import '../screens/coordinator/coordinator_dashboard_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -197,11 +197,11 @@ class _AppDrawerState extends State<AppDrawer> {
             _buildDrawerItem(
               context,
               icon: Icons.manage_accounts,
-              text: "Coordinating Events",
+              text: "Coordinator Dashboard",
               onTap: () => _onTapNavigate(
                 context,
                 '/coordinator/events',
-                (ctx) => const CoordinatingEventsPage(),
+                (ctx) => const CoordinatorDashboardPage(),
               ),
             ),
           ],
