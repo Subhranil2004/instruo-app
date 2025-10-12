@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instruo_application/home_page.dart';
+import 'package:instruo_application/screens/direction_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
 import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
@@ -116,6 +117,18 @@ class AppDrawer extends StatelessWidget {
               (ctx) => const TimelinePage(dayIndex: 0),
             ),
           ),
+
+          _buildDrawerItem(
+            context,
+            icon: Icons.directions,
+            text: "Campus Direction",
+            onTap: () => _onTapNavigate(
+              context,
+              '/direction',
+              (ctx) => DirectionsPage(),
+            ),
+          ),
+          
           _buildDrawerItem(
             context,
             icon: Icons.star,

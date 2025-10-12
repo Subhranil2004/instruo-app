@@ -219,7 +219,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       
       // Update Users collection - add event to each member's eventsRegistered list
       // Note: Commented out as Users collection doesn't have this field yet
-      /*
+      
       final batch = firestore.batch();
       
       // Add event to current user's eventsRegistered
@@ -237,7 +237,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       }
       
       await batch.commit();
-      */
+      
       
       displayMessageToUser(
         "Successfully registered for ${widget.event.name}!", 
