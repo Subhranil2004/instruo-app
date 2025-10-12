@@ -11,7 +11,7 @@ class AppTheme {
   static const Color textSecondary = Color(0xFF6B7280);
   // Dark palette
   static const Color backgroundDark = Color.fromARGB(255, 22, 25, 31);
-  static const Color surfaceDark = Color.fromARGB(255, 30, 36, 57);
+  static const Color surfaceDark = Color.fromARGB(255, 34, 40, 64);
   static const Color textPrimaryDark = Color(0xFFECECF1);
   static const Color textSecondaryDark = Color(0xFFA0A6B1);
 
@@ -116,7 +116,7 @@ class AppTheme {
       ),
       titleLarge: GoogleFonts.poppins(
         fontSize: 20,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.normal,
         color: textPrimary,
       ),
       titleMedium: GoogleFonts.poppins(
@@ -221,7 +221,7 @@ class AppTheme {
       ),
       titleLarge: GoogleFonts.poppins(
         fontSize: 20,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.normal,
         color: textPrimaryDark,
       ),
       titleMedium: GoogleFonts.poppins(

@@ -4,6 +4,7 @@ import '../../widgets/custom_app_bar.dart';
 import '../../theme/theme.dart';
 import '../../events/events_model.dart';
 import '../../helper/helper_functions.dart';
+import 'event_update_page.dart';
 
 class EventParticipantsPage extends StatefulWidget {
   final Event event;
@@ -25,60 +26,123 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
   }
 
   Future<void> _loadTeams() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      // Get teams for this event
-      final teamsSnapshot = await FirebaseFirestore.instance
-          .collection('Teams')
-          .where('eventId', isEqualTo: widget.event.id)
+      final firestore = FirebaseFirestore.instance;
+
+      // Step 1: Fetch Event document to retrieve team IDs
+      final eventDoc = await firestore
+          .collection('Events')
+          .doc(widget.event.id)
           .get();
 
-      List<Map<String, dynamic>> teams = [];
+      if (!mounted) return;
 
-      for (var teamDoc in teamsSnapshot.docs) {
-        final teamData = teamDoc.data();
-        final teamMembers = List<String>.from(teamData['members'] ?? []);
-        
-        // Get member details
-        List<Map<String, dynamic>> memberDetails = [];
-        for (String memberEmail in teamMembers) {
-          try {
-            final userDoc = await FirebaseFirestore.instance
-                .collection('Users')
-                .doc(memberEmail)
-                .get();
-            
-            if (userDoc.exists) {
-              final userData = userDoc.data()!;
-              memberDetails.add({
-                'email': memberEmail,
-                'name': userData['name'] ?? 'Unknown',
-                'phone': userData['phone'] ?? 'N/A',
-                'department': userData['department'] ?? 'N/A',
-                'college': userData['college'] ?? 'N/A',
-                'year': userData['year'] ?? 'N/A',
-                'isLead': memberEmail == teamData['lead'],
-              });
-            }
-          } catch (e) {
-            // Skip if user data not found
-            continue;
-          }
+      if (!eventDoc.exists) {
+        setState(() {
+          _teams = [];
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final eventData = eventDoc.data();
+      final List<String> teamIds = List<String>.from(
+        (eventData?['teams'] ?? []).map((value) => value.toString()),
+      );
+
+      if (teamIds.isEmpty) {
+        setState(() {
+          _teams = [];
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Step 2: Fetch all team documents for the collected IDs
+      final teamDocs = await Future.wait(
+        teamIds.map((teamId) => firestore.collection('Teams').doc(teamId).get()),
+      );
+
+      // Step 3: Collect unique member emails (including leads) to batch-fetch user data
+      final Set<String> memberEmails = {};
+      for (final doc in teamDocs) {
+        if (!doc.exists) continue;
+        final data = doc.data();
+        if (data == null) continue;
+
+        final List<dynamic> membersDynamic = data['members'] ?? [];
+        memberEmails.addAll(membersDynamic.map((e) => e.toString()));
+
+        final lead = data['lead'];
+        if (lead != null && lead.toString().isNotEmpty) {
+          memberEmails.add(lead.toString());
         }
+      }
+
+      // Step 4: Fetch user details for every unique member email
+      final Map<String, Map<String, dynamic>> usersByEmail = {};
+      await Future.wait(memberEmails.map((email) async {
+        final userDoc = await firestore.collection('Users').doc(email).get();
+        final userData = userDoc.data();
+        if (userDoc.exists && userData != null) {
+          usersByEmail[email] = {
+            'email': email,
+            ...userData,
+          };
+        }
+      }));
+
+      // Step 5: Construct enriched team objects for the UI
+      final List<Map<String, dynamic>> teams = [];
+      for (final doc in teamDocs) {
+        if (!doc.exists) continue;
+        final data = doc.data();
+        if (data == null) continue;
+
+        final String teamId = doc.id;
+        final String teamName = data['name']?.toString() ?? 'Unnamed Team';
+        final String leadEmail = data['lead']?.toString() ?? '';
+        final List<String> members = List<String>.from(
+          (data['members'] ?? []).map((e) => e.toString()),
+        );
+
+        final List<Map<String, dynamic>> memberDetails = members.map((memberEmail) {
+          final userData = usersByEmail[memberEmail];
+          final String name = (userData?['name'] ?? '').toString();
+          final String collegeName = (userData?['collegeName'] ?? userData?['college'] ?? '').toString();
+
+          return {
+            'email': memberEmail,
+            'name': name.isNotEmpty ? name : memberEmail,
+            'phone': (userData?['phone'] ?? 'N/A').toString(),
+            'department': (userData?['department'] ?? 'N/A').toString(),
+            'college': collegeName.isNotEmpty ? collegeName : 'N/A',
+            'year': (userData?['year'] ?? 'N/A').toString(),
+            'isLead': memberEmail == leadEmail,
+          };
+        }).toList();
 
         teams.add({
-          'id': teamDoc.id,
-          'name': teamData['name'] ?? 'Unnamed Team',
-          'lead': teamData['lead'] ?? '',
+          'id': teamId,
+          'name': teamName,
+          'lead': leadEmail,
           'members': memberDetails,
-          'createdAt': teamData['createdAt'],
+          'createdAt': data['createdAt'],
         });
       }
 
+      teams.sort((a, b) => a['name'].toString().compareTo(b['name'].toString()));
+
+      if (!mounted) return;
       setState(() {
         _teams = teams;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -90,7 +154,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: widget.event.name,
+        title: "COORDINATOR DASHBOARD",
         showBackButton: true,
         showProfileButton: false,
       ),
@@ -170,10 +234,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                     Expanded(
                       child: Text(
                         widget.event.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppTheme.primaryBlue,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge
                       ),
                     ),
                   ],
@@ -183,13 +244,19 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                   children: [
                     _buildInfoChip(
                       Icons.category,
-                      widget.event.category,
-                      AppTheme.primaryBlue,
+                      widget.event.category.toUpperCase(),
+                      AppTheme.secondaryPurple,
                     ),
                     const SizedBox(width: 12),
                     _buildInfoChip(
                       Icons.groups,
                       "${_teams.length} team${_teams.length != 1 ? 's' : ''}",
+                      AppTheme.primaryBlue,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildInfoChip(
+                      Icons.currency_rupee,
+                      "${widget.event.fee}",
                       AppTheme.secondaryPurple,
                     ),
                   ],
@@ -226,10 +293,13 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
 
   Widget _buildTeamCard(Map<String, dynamic> team, int teamNumber) {
     final members = List<Map<String, dynamic>>.from(team['members']);
-    final leadMember = members.firstWhere(
-      (member) => member['isLead'] == true,
-      orElse: () => members.first,
-    );
+    Map<String, dynamic>? leadMember;
+    if (members.isNotEmpty) {
+      leadMember = members.firstWhere(
+        (member) => member['isLead'] == true,
+        orElse: () => members.first,
+      );
+    }
 
     return Card(
       elevation: 4,
@@ -263,12 +333,40 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
-            "Lead: ${leadMember['name']} • ${members.length} member${members.length != 1 ? 's' : ''}",
+            "Lead: ${leadMember?['name'] ?? 'N/A'} • ${members.length} member${members.length != 1 ? 's' : ''}",
             style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 14,
             ),
           ),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit, color: AppTheme.primaryBlue),
+              tooltip: 'Edit team',
+              onPressed: () async {
+                final result = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventUpdatePage(
+                      event: widget.event,
+                      team: {
+                        ...team,
+                        'members': List<Map<String, dynamic>>.from(team['members']),
+                      },
+                    ),
+                  ),
+                );
+
+                if (result == true) {
+                  _loadTeams();
+                }
+              },
+            ),
+            const Icon(Icons.expand_more),
+          ],
         ),
         children: [
           const Divider(),
@@ -280,28 +378,38 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
   }
 
   Widget _buildMemberTile(Map<String, dynamic> member) {
+    final String name = (member['name'] ?? '').toString();
+    final String email = (member['email'] ?? '').toString();
+    final String displayName = name.isNotEmpty ? name : email;
+    final String initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
+    final String college = (member['college'] ?? 'N/A').toString();
+    final String department = (member['department'] ?? 'N/A').toString();
+    final String phone = (member['phone'] ?? 'N/A').toString();
+    final String year = (member['year'] ?? 'N/A').toString();
+    final bool isLead = member['isLead'] == true;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: member['isLead'] 
+        color: isLead 
             ? AppTheme.primaryBlue.withOpacity(0.05)
             : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: member['isLead'] 
+        border: isLead 
             ? Border.all(color: AppTheme.primaryBlue.withOpacity(0.2))
             : null,
       ),
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: member['isLead'] 
+            backgroundColor: isLead 
                 ? AppTheme.primaryBlue.withOpacity(0.1)
                 : AppTheme.secondaryPurple.withOpacity(0.1),
             child: Text(
-              member['name'][0].toUpperCase(),
+              initial,
               style: TextStyle(
-                color: member['isLead'] ? AppTheme.primaryBlue : AppTheme.secondaryPurple,
+                color: isLead ? AppTheme.primaryBlue : AppTheme.secondaryPurple,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -314,13 +422,13 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                 Row(
                   children: [
                     Text(
-                      member['name'],
+                      displayName,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
                       ),
                     ),
-                    if (member['isLead']) ...[
+                    if (isLead) ...[
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -342,7 +450,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${member['college']} • ${member['department']}",
+                  "$college • $department",
                   style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,
@@ -350,7 +458,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  "Phone: ${member['phone']} • Year: ${member['year']}",
+                  "Phone: $phone • Year: $year",
                   style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../theme/theme.dart';
 import '../../events/events_model.dart';
+import '../../events/events_info.dart';
 import '../../helper/helper_functions.dart';
 import 'event_participants_page.dart';
 
@@ -39,11 +40,14 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
           .doc(currentUser!.email)
           .get();
 
+      if (!mounted) return;
+
       if (userDoc.exists) {
         final userData = userDoc.data();
         final isCoordinator = userData?['isCoordinator'] ?? false;
         
         if (!isCoordinator) {
+          if (!mounted) return;
           displayMessageToUser("Access denied. Coordinator privileges required.", context);
           Navigator.pop(context);
           return;
@@ -54,11 +58,14 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
         });
 
         await _loadCoordinatedEvents();
+        if (!mounted) return;
       } else {
+        if (!mounted) return;
         displayMessageToUser("User data not found", context);
         Navigator.pop(context);
       }
     } catch (e) {
+      if (!mounted) return;
       displayMessageToUser("Error checking coordinator status: $e", context);
       Navigator.pop(context);
     }
@@ -71,6 +78,8 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
           .collection('Users')
           .doc(currentUser!.email)
           .get();
+
+      if (!mounted) return;
 
       if (!userDoc.exists) {
         setState(() {
@@ -92,38 +101,35 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
         return;
       }
 
-      // Firestore whereIn accepts max 10 items — split into chunks if needed
-      final List<Event> events = [];
-      const int chunkSize = 10;
-      for (var i = 0; i < coordIds.length; i += chunkSize) {
-        final end = (i + chunkSize < coordIds.length) ? i + chunkSize : coordIds.length;
-        final chunk = coordIds.sublist(i, end);
+      final Map<String, Event> catalog = {
+        for (final event in events) event.id: event,
+      };
 
-        final q = await FirebaseFirestore.instance
-            .collection('Events')
-            .where(FieldPath.documentId, whereIn: chunk)
-            .get();
-
-        
-        for (final doc in q.docs) {
-          final data = doc.data();
-          events.add(Event.fromMap({
-            'id': doc.id,
-            ...data,
-          }));
-        }
+      List<Event> resolvedEvents;
+      if (coordIds.contains('all')) {
+        resolvedEvents = List<Event>.from(events)..sort((a, b) => a.name.compareTo(b.name));
+      } else {
+        resolvedEvents = coordIds
+            .map((id) => catalog[id])
+            .whereType<Event>()
+            .toList();
       }
 
-      // Keep original order as per coordIds (optional)
-      final Map<String, Event> byId = {for (var e in events) e.id: e};
-      final List<Event> ordered = coordIds.where((id) => byId.containsKey(id)).map((id) => byId[id]!).toList();
-      print("ORDERED EVENTS IDS: ${ordered.map((e) => e.id).toList()}");
-      print("ORDERED EVENTS NAMES: ${ordered.map((e) => e.name).toList()}");
+      if (resolvedEvents.isEmpty && coordIds.isNotEmpty) {
+        if (!mounted) return;
+        displayMessageToUser(
+          "No matching events found in catalog for assigned IDs.",
+          context,
+        );
+      }
+
+      if (!mounted) return;
       setState(() {
-        _coordinatingEvents = ordered;
+        _coordinatingEvents = resolvedEvents;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -148,7 +154,7 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Coordinator Dashboard",
+        title: "COORDINATOR DASHBOARD",
         showBackButton: true,
         onBackPressed: () {
           Navigator.pushReplacementNamed(context, '/home'); // Navigate to the home route
@@ -203,22 +209,23 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 12),
           // Events List
-          Text(
-            "Managing ${_coordinatingEvents.length} event${_coordinatingEvents.length != 1 ? 's' : ''}",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.primaryBlue,
+          Center(
+            child: Text(
+              "Managing ${_coordinatingEvents.length} event${_coordinatingEvents.length != 1 ? 's' : ''}",
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),
           const SizedBox(height: 12),
 
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
               itemCount: _coordinatingEvents.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final event = _coordinatingEvents[index];
-                return _buildEventCard(event);
+                return _buildEventTile(event);
               },
             ),
           ),
@@ -227,14 +234,17 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
     );
   }
 
-  Widget _buildEventCard(Event event) {
+  Widget _buildEventTile(Event event) {
     return Card(
-      elevation: 4,
-      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: InkWell(
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         onTap: () {
           Navigator.push(
             context,
@@ -243,115 +253,93 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Event Header
-              Row(
+        // leading: CircleAvatar(
+        //   backgroundColor: AppTheme.primaryBlue.withOpacity(0.15),
+        //   child: Text(
+        //     event.category.isNotEmpty ? event.category[0].toUpperCase() : '?',
+        //     style: TextStyle(
+        //       color: AppTheme.primaryBlue,
+        //       fontWeight: FontWeight.w600,
+        //     ),
+        //   ),
+        // ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              event.name,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            _buildInfoChip(Icons.category, event.category.toUpperCase()),
+          ],
+        ),
+        // subtitle: Padding(
+        //   padding: const EdgeInsets.only(top: 6),
+        //   child: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: [
+        //       // Text(
+        //       //   event.description,
+        //       //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        //       //         color: AppTheme.textSecondary,
+        //       //       ),
+        //       //   maxLines: 2,
+        //       //   overflow: TextOverflow.ellipsis,
+        //       // ),
+        //       // const SizedBox(height: 8),
+        //       // Wrap(
+        //       //   spacing: 8,
+        //       //   runSpacing: 8,
+        //       //   children: [
+        //       //     _buildInfoChip(Icons.category, event.category.toUpperCase()),
+        //       //     _buildInfoChip(
+        //       //       Icons.group,
+        //       //       "${event.minTeamSize}-${event.maxTeamSize} members",
+        //       //     ),
+        //       //     _buildInfoChip(
+        //       //       Icons.currency_rupee,
+        //       //       "₹${event.fee}",
+        //       //     ),
+        //       //   ],
+        //       // ),
+        //     ],
+        //   ),
+        // ),
+        trailing: FutureBuilder<int>(
+          future: _getEventTeamsCount(event.id),
+          builder: (context, snapshot) {
+            final teamsCount = snapshot.data ?? 0;
+            return IntrinsicHeight(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      event.category.toUpperCase(),
-                      style: TextStyle(
-                        color: AppTheme.primaryBlue,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                  VerticalDivider(
+                    color: Colors.grey.shade300,
+                    thickness: 1,
+                    width: 24,
                   ),
-                  // const Spacer(),
-                  // IconButton(
-                  //   onPressed: () {
-                  //     // TODO: Edit event functionality
-                  //     displayMessageToUser("Edit functionality coming soon!", context);
-                  //   },
-                  //   icon: const Icon(Icons.edit),
-                  //   color: AppTheme.primaryBlue,
-                  //   tooltip: "Edit Event",
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Event Name
-              Text(
-                event.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Event Description
-              Text(
-                event.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 16),
-
-              // Event Details
-              Row(
-                children: [
-                  _buildInfoChip(
-                    Icons.group,
-                    "Team: ${event.minTeamSize}-${event.maxTeamSize}",
-                  ),
-                  const SizedBox(width: 12),
-                  _buildInfoChip(
-                    Icons.currency_rupee,
-                    "₹${event.fee}",
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Teams Count (using FutureBuilder for real-time data)
-              FutureBuilder<int>(
-                future: _getEventTeamsCount(event.id),
-                builder: (context, snapshot) {
-                  final teamsCount = snapshot.data ?? 0;
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.secondaryPurple.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.groups,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.groups, color: AppTheme.secondaryPurple, size: 20),
+                      const SizedBox(height: 4),
+                      Text(
+                        "$teamsCount team${teamsCount != 1 ? 's' : ''}",
+                        style: TextStyle(
                           color: AppTheme.secondaryPurple,
-                          size: 16,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          "$teamsCount team${teamsCount != 1 ? 's' : ''} registered",
-                          style: TextStyle(
-                            color: AppTheme.secondaryPurple,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
