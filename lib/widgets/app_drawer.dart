@@ -165,7 +165,7 @@ class _AppDrawerState extends State<AppDrawer> {
             onTap: () => _onTapNavigate(
               context,
               '/timeline/day1',
-              (ctx) => const TimelinePage(dayIndex: 0),
+              (ctx) => const TimelinePage(),
             ),
           ),
 

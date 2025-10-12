@@ -28,9 +28,7 @@ class MyApp extends StatelessWidget {
       home: HomePage(), // Start with Home page
       routes: {
         '/home': (context) => HomePage(), // Add this
-        '/timeline/day1': (context) => const TimelinePage(dayIndex: 0),
-        '/timeline/day2': (context) => const TimelinePage(dayIndex: 1),
-        '/timeline/day3': (context) => const TimelinePage(dayIndex: 2),
+        '/timeline': (context) => const TimelinePage(),
       },
 
     );
