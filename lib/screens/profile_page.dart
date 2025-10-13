@@ -34,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _userName = ''; // New state variable for the user's name
   List<dynamic> _coordinatingEventsIds = [];
   List<Event> _coordinatingEvents = [];
+  List<Event> _registeredEvents = [];
 
   final List<String> _yearOptions = [
     "UG1", "UG2", "UG3", "UG4", "UG5",
@@ -73,8 +74,16 @@ class _ProfilePageState extends State<ProfilePage> {
               _selectedYear = firestoreYear;
             }
             _isCoordinating = userData?['isCoordinator'] ?? false;
-            _coordinatingEventsIds = userData?['coordinatingEvents'] ?? [];
-            _coordinatingEvents = events.where((event) => _coordinatingEventsIds.contains(event.id)).toList();
+            _coordinatingEventsIds = List<String>.from(userData?['coordinatingEvents'] ?? []);
+            _coordinatingEvents = events
+                .where((event) => _coordinatingEventsIds.contains(event.id))
+                .toList();
+
+            // Convert eventsRegistered IDs to List<String> and map to Event objects
+            List<String> registeredIds = List<String>.from(userData?['eventsRegistered'] ?? []);
+            _registeredEvents = events
+                .where((event) => registeredIds.contains(event.id))
+                .toList();
             _isIIESTian = userData?['iiestian'] ?? true;
             _collegeController.text = userData?['collegeName'] ?? '';
             _isDataLoaded = true;
@@ -151,6 +160,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Coordinator events: ${_coordinatingEvents.length}");
+                      print("Coordinator event IDs: $_coordinatingEventsIds");
     return Scaffold(
       appBar: const CustomAppBar(
         title: "PROFILE",
@@ -282,7 +293,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             child: const Text("Edit"),
                           ),
-                    
+                          
                     if (_isCoordinating && !_isEditing) ...[
                       const SizedBox(height: 20),
                       const Text(
@@ -302,11 +313,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         // Make only the list scrollable by bounding its height
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: SizedBox(
-                            // Make height adaptive to screen size so only this list scrolls
-                            height: MediaQuery.of(context).size.height * 0.35, // ~40% of screen height
+                          child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.25, // max 35%
+                                  ), // ~40% of screen height
                             child: ListView.builder(
                               // Let this ListView handle its own scrolling
+                              shrinkWrap: true,
                               physics: const BouncingScrollPhysics(),
                               itemCount: _coordinatingEvents.length,
                               itemBuilder: (context, index) {
@@ -319,7 +332,43 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
-                    ], 
+                    ],
+                    if (!_isEditing) ...[
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Registered Events",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      const Divider(
+                        indent: 18.0,
+                        endIndent: 18.0,
+                      ),
+                      if (_registeredEvents.isEmpty)
+                        const Text("Not registered for any events yet.")
+                      else
+                        // Make only the list scrollable by bounding its height
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.25, // max 35%
+                                  ),  // ~40% of screen height
+                            child: ListView.builder(
+                              // Let this ListView handle its own scrolling
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _registeredEvents.length,
+                              itemBuilder: (context, index) {
+                                final event = _registeredEvents[index];
+                                return ListTile(
+                                  title: Text(event.name),
+                                  trailing: Text(event.category.toUpperCase()), 
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
                   ],
                 ),
               ),
