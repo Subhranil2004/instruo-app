@@ -154,7 +154,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "COORDINATOR DASHBOARD",
+        title: "DASHBOARD",
         showBackButton: true,
         showProfileButton: false,
       ),
@@ -253,10 +253,16 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                       "${_teams.length} team${_teams.length != 1 ? 's' : ''}",
                       AppTheme.primaryBlue,
                     ),
-                    const SizedBox(width: 12),
+                    //const SizedBox(width: 12),
+                    
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
                     _buildInfoChip(
                       Icons.currency_rupee,
-                      "${widget.event.fee}",
+                      "${widget.event.fee} (non-IIESTians)",
                       AppTheme.secondaryPurple,
                     ),
                   ],
@@ -394,7 +400,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
       decoration: BoxDecoration(
         color: isLead 
             ? AppTheme.primaryBlue.withOpacity(0.05)
-            : Colors.grey.shade50,
+            : AppTheme.primaryBlue.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
         border: isLead 
             ? Border.all(color: AppTheme.primaryBlue.withOpacity(0.2))
