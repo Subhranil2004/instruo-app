@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instruo_application/helper/helper_functions.dart';
 import 'events_model.dart';
 import "../theme/theme.dart";
 import "../widgets/app_drawer.dart";
@@ -92,16 +93,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         child: FloatingActionButton(
                           onPressed: () {
                             if (_isRegistered) {
-                              // Navigate to edit page
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EventEditPage(event: widget.event),
-                                ),
-                              ).then((_) {
-                                // Refresh registration status when returning
-                                _checkRegistrationStatus();
-                              });
+                              // Contact coordinator to edit registration
+
+                              displayMessageToUser("ℹ️ Contact the event coordinator for editing or deleting your registration.", context, isError: false, durationSeconds: 4);
                             } else {
                               // Navigate to register page
                               Navigator.push(

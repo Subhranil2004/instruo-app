@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instruo_application/widgets/my_button.dart';
 import 'events_model.dart';
 import '../widgets/my_textfield.dart';
 import '../widgets/custom_app_bar.dart';
@@ -91,12 +92,19 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
             final data = doc.data();
             return {
               'email': doc.id,
-              'name': data['name'] ?? 'Unknown',
-              'phone': data['phone'] ?? 'N/A',
-              'department': data['department'] ?? 'N/A',
+              'name': data['name'] ?? '',
+              'phone': data['phone'] ?? '',
+              'department': data['department'] ?? '',
+              'collegeName': data['collegeName'] ?? '',
+              'year': data['year'] ?? '',
             };
           })
-          .where((user) => user['name'] != 'Unknown') // Only include users with names
+          .where((user) => 
+              user['name']!.isNotEmpty && 
+              user['phone']!.isNotEmpty && 
+              user['department']!.isNotEmpty && 
+              user['collegeName']!.isNotEmpty &&
+              user['year']!.isNotEmpty) // Only include users with complete profiles
           .toList();
 
       setState(() {
@@ -121,12 +129,10 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
     final filtered = _allUsers.where((user) {
       final name = user['name'].toString().toLowerCase();
-      final email = user['email'].toString().toLowerCase();
       final phone = user['phone'].toString().toLowerCase();
       final searchQuery = query.toLowerCase();
       
       return name.contains(searchQuery) || 
-            //  email.contains(searchQuery) || 
              phone.contains(searchQuery);
     }).toList();
 
@@ -195,49 +201,45 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
     try {
       final firestore = FirebaseFirestore.instance;
-      
-      // Create team document
-      final teamDoc = await firestore.collection('Teams').add({
+
+      // Use a single batched write to create the team and update Events and Users
+      final batch = firestore.batch();
+
+      // Create a new Team document with a generated ID and include tid in the document
+      final teamRef = firestore.collection('Teams').doc(); // generated id
+      final teamId = teamRef.id;
+      final teamData = {
         'name': _teamNameController.text.trim(),
         'members': [currentUser!.email!, ..._selectedMembers.map((m) => m['email']).toList()],
-        // use uid instead?
         'lead': currentUser!.email!,
         'eventId': widget.event.id,
         'createdAt': FieldValue.serverTimestamp(),
-      });
-      
-      final teamId = teamDoc.id;
-      
-      // Update the team document with its own ID
-      await teamDoc.update({'tid': teamId});
-      
-      // Update Events collection - add team to event's teams list
-      final eventDoc = firestore.collection('Events').doc(widget.event.id);
-      await eventDoc.set({
+        'tid': teamId,
+      };
+      batch.set(teamRef, teamData);
+
+      // Update Events collection - add team id to event's teams array (merge)
+      final eventRef = firestore.collection('Events').doc(widget.event.id);
+      batch.set(eventRef, {
         'teams': FieldValue.arrayUnion([teamId])
       }, SetOptions(merge: true));
-      
-      // Update Users collection - add event to each member's eventsRegistered list
-      // Note: Commented out as Users collection doesn't have this field yet
-      /*
-      final batch = firestore.batch();
-      
-      // Add event to current user's eventsRegistered
-      final currentUserDoc = firestore.collection('Users').doc(currentUser!.email!);
-      batch.update(currentUserDoc, {
+
+      // Update Users collection - add event to each member's eventsRegistered list (merge)
+      final currentUserRef = firestore.collection('Users').doc(currentUser!.email!);
+      batch.set(currentUserRef, {
         'eventsRegistered': FieldValue.arrayUnion([widget.event.id])
-      });
-      
-      // Add event to each team member's eventsRegistered
+      }, SetOptions(merge: true));
+
       for (final member in _selectedMembers) {
-        final memberDoc = firestore.collection('Users').doc(member['email']);
-        batch.update(memberDoc, {
+        final memberRef = firestore.collection('Users').doc(member['email']);
+        batch.set(memberRef, {
           'eventsRegistered': FieldValue.arrayUnion([widget.event.id])
-        });
+        }, SetOptions(merge: true));
       }
-      
+
+      // Commit all writes in one atomic operation
       await batch.commit();
-      */
+      //////////////////////////////////////////////
       
       displayMessageToUser(
         "Successfully registered for ${widget.event.name}!", 
@@ -247,7 +249,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       
       Navigator.pop(context);
     } catch (e) {
-      displayMessageToUser("Registration failed: $e", context);
+      displayMessageToUser("Registration failed: $e", context, durationSeconds: 6);
     } finally {
       setState(() {
         _isRegistering = false;
@@ -259,193 +261,407 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "${widget.event.name}",
+        title: widget.event.name,
         showBackButton: true,
         showProfileButton: false,
       ),
       body: _isLoadingUsers
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Event Info Card
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Event Info Card
+                  Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppTheme.primaryBlue.withOpacity(0.1),
+                                  AppTheme.secondaryPurple.withOpacity(0.05),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Text(
-                                //   widget.event.name,
-                                //   style: Theme.of(context).textTheme.titleLarge,
-                                // ),
-                                // const SizedBox(height: 8),
-                                Text(
-                                  "Team Size: ${widget.event.minTeamSize} - ${widget.event.maxTeamSize}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.event,
+                                      color: AppTheme.primaryBlue,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Event Details",
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: AppTheme.primaryBlue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "Registration Fee: ₹${widget.event.fee} (for non-IIESTians)",
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                const SizedBox(height: 12),
+                                _buildInfoRow(
+                                  context,
+                                  Icons.people,
+                                  "Team Size",
+                                  "${widget.event.minTeamSize} - ${widget.event.maxTeamSize} members",
+                                ),
+                                const SizedBox(height: 8),
+                                _buildInfoRow(
+                                  context,
+                                  Icons.currency_rupee,
+                                  "Registration Fee",
+                                  "₹${widget.event.fee} (non-IIESTians)",
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
 
-                        // Team/Individual Name
+                        // Team/Individual Name Section
+                        _buildSectionHeader(
+                          context,
+                          widget.event.maxTeamSize == 1 ? "Participant Details" : "Team Details",
+                          Icons.edit,
+                        ),
+                        const SizedBox(height: 12),
                         MyTextField(
                           controller: _teamNameController,
                           labelText: widget.event.maxTeamSize == 1 ? "Your Name" : "Team Name",
                           hintText: widget.event.maxTeamSize == 1 
                               ? "Enter your name" 
-                              : "Enter team name",
+                              : "Enter your team name",
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
 
                         // Team Members Section (only if maxTeamSize > 1)
                         if (widget.event.maxTeamSize > 1) ...[
-                          Text(
-                            "Team Members",
-                            style: Theme.of(context).textTheme.titleMedium,
+                          _buildSectionHeader(
+                            context,
+                            "Team Members (${_selectedMembers.length}/${widget.event.maxTeamSize - 1})",
+                            Icons.group_add,
                           ),
                           const SizedBox(height: 12),
 
-                          // Selected Members
-                          ..._selectedMembers.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final member = entry.value;
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  child: Text(member['name'][0].toUpperCase()),
-                                ),
-                                title: Text(member['name']),
-                                subtitle: Text("${member['phone']}"),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.close, color: Colors.red),
-                                  onPressed: () => _removeMember(index),
-                                ),
-                                // isThreeLine: true,
-                              ),
-                            );
-                          }).toList(),
-
                           // Add Member Button
                           if (_selectedMembers.length < widget.event.maxTeamSize - 1)
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                setState(() {
-                                  _showSearch = true;
-                                });
-                              },
-                              icon: const Icon(Icons.person_add),
-                              label: const Text("Add Member"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                                foregroundColor: AppTheme.primaryBlue,
+                            Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 16),
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  setState(() {
+                                    _showSearch = !_showSearch;
+                                    if (!_showSearch) {
+                                      _searchController.clear();
+                                      _filteredUsers = [];
+                                    }
+                                  });
+                                },
+                                icon: Icon(_showSearch ? Icons.close : Icons.person_add),
+                                label: Text(_showSearch ? "Cancel" : "Add Team Member"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _showSearch 
+                                      ? Colors.grey.withOpacity(0.1)
+                                      : AppTheme.primaryBlue.withOpacity(0.1),
+                                  foregroundColor: _showSearch 
+                                      ? Theme.of(context).textTheme.bodyMedium?.color
+                                      : AppTheme.primaryBlue,
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
                               ),
                             ),
-
-                          const SizedBox(height: 16),
 
                           // Search Section
                           if (_showSearch) ...[
-                            MyTextField(
-                              controller: _searchController,
-                              labelText: "Search Members",
-                              hintText: "Type name, email or phone...",
-                              onChanged: _searchUsers,
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  setState(() {
-                                    _showSearch = false;
-                                    _searchController.clear();
-                                    _filteredUsers = [];
-                                  });
-                                },
+                            Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Search Team Members",
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppTheme.primaryBlue,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    MyTextField(
+                                      controller: _searchController,
+                                      labelText: "Search Members",
+                                      hintText: "Type name or phone number...",
+                                      onChanged: _searchUsers,
+                                      suffixIcon: _searchController.text.isNotEmpty
+                                          ? IconButton(
+                                              icon: const Icon(Icons.clear),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _searchController.clear();
+                                                  _filteredUsers = [];
+                                                });
+                                              },
+                                            )
+                                          : const Icon(Icons.search),
+                                    ),
+                                    
+                                    // Search Results
+                                    if (_filteredUsers.isNotEmpty) ...[
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "Search Results",
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        constraints: const BoxConstraints(maxHeight: 300),
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: _filteredUsers.length,
+                                          itemBuilder: (context, index) {
+                                            final user = _filteredUsers[index];
+                                            return Column(
+                                              children: [
+                                                ListTile(
+                                                  contentPadding: const EdgeInsets.symmetric(
+                                                    horizontal: 16, vertical: 8
+                                                  ),
+                                                  leading: CircleAvatar(
+                                                    backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+                                                    child: Text(
+                                                      user['name'][0].toUpperCase(),
+                                                      style: TextStyle(
+                                                        color: AppTheme.primaryBlue,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  title: Text(
+                                                    user['name'],
+                                                    style: const TextStyle(fontWeight: FontWeight.w500),
+                                                  ),
+                                                  subtitle: Text(
+                                                    "${user['collegeName']} • ${user['department']}\n${user['phone']}",
+                                                    style: Theme.of(context).textTheme.bodySmall,
+                                                  ),
+                                                  isThreeLine: true,
+                                                  onTap: () => _addMember(user),
+                                                  trailing: Icon(
+                                                    Icons.add_circle_outline, 
+                                                    color: AppTheme.primaryBlue,
+                                                  ),
+                                                ),
+                                                if (index < _filteredUsers.length - 1)
+                                                  Divider(
+                                                    height: 1,
+                                                    thickness: 0.5,
+                                                    color: Colors.grey.shade400,
+                                                    indent: 16,
+                                                    endIndent: 16,
+                                                  ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ] else if (_searchController.text.isNotEmpty) ...[
+                                      const SizedBox(height: 16),
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade50,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(color: Colors.grey.shade300),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons.search_off,
+                                              color: Colors.grey.shade400,
+                                              size: 32,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "No members found",
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 16),
+                          ],
 
-                            // Search Results
-                            if (_filteredUsers.isNotEmpty)
-                              Container(
-                                constraints: const BoxConstraints(maxHeight: 300),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: _filteredUsers.length,
-                                  itemBuilder: (context, index) {
-                                    final user = _filteredUsers[index];
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        border: index > 0 ? Border(
-                                          top: BorderSide(color: Colors.grey.shade200),
-                                        ) : null,
-                                      ),
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                                          child: Text(
-                                            user['name'][0].toUpperCase(),
-                                            style: TextStyle(color: AppTheme.primaryBlue),
-                                          ),
+                          // Selected Members Section
+                          if (_selectedMembers.isNotEmpty) ...[
+                            // Text(
+                            //   "Added Team Members",
+                            //   style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            //     fontWeight: FontWeight.w600,
+                            //     color: AppTheme.primaryBlue,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 12),
+                            ..._selectedMembers.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final member = entry.value;
+                              return Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(16),
+                                    leading: CircleAvatar(
+                                      backgroundColor: AppTheme.secondaryPurple.withOpacity(0.1),
+                                      child: Text(
+                                        member['name'][0].toUpperCase(),
+                                        style: TextStyle(
+                                          color: AppTheme.secondaryPurple,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                        title: Text(user['name']),
-                                        subtitle: Text("${user['email']}\n${user['phone']}"),
-                                        onTap: () => _addMember(user),
-                                        isThreeLine: true,
-                                        trailing: Icon(Icons.add_circle_outline, color: AppTheme.primaryBlue),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
+                                    ),
+                                    title: Text(
+                                      member['name'],
+                                      style: const TextStyle(fontWeight: FontWeight.w500),
+                                    ),
+                                    subtitle: Text(
+                                      "${member['collegeName']} • ${member['department']}\n${member['phone']}",
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                      onPressed: () => _removeMember(index),
+                                      tooltip: "Remove member",
+                                    ),
+                                  ),
+                                );
+                            }).toList(),
+                            const SizedBox(height: 16),
                           ],
                         ],
 
-                        const SizedBox(height: 100), // Space for fixed button
-                      ],
-                    ),
-                  ),
-                ),
+                        // Register Button at bottom of content
+                        const SizedBox(height: 32),
+                        _isRegistering
+                            ? Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      "Registering...",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : MyButton(
+                                text: 'Register for Event',
+                                onTap: _registerForEvent,
+                              ),
+                        const SizedBox(height: 32),
+                ],
+              ),
+            ),
+    );
+  }
 
-                // Fixed Register Button
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, -3),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _isRegistering ? null : _registerForEvent,
-                    child: _isRegistering
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Register"),
-                  ),
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: AppTheme.primaryBlue,
+          size: 24,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: AppTheme.primaryBlue,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          color: AppTheme.primaryBlue,
+          size: 16,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyMedium,
+              children: [
+                TextSpan(
+                  text: "$label: ",
+                  style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
+                TextSpan(text: value),
               ],
             ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -43,24 +43,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final Color bgTop = isDark ? AppTheme.surfaceDark : AppTheme.backgroundLight;
-    final Color bgBottom = isDark ? AppTheme.backgroundDark : AppTheme.backgroundGradientEnd;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: const CustomAppBar(
         title: "HOME",
         showBackButton: false,
       ),
       drawer: AppDrawer(),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [bgTop, bgBottom],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: theme.scaffoldBackgroundColor,
         child: Column(
           children: [
             const SizedBox(height: 40),
