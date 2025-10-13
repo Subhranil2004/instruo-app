@@ -29,6 +29,7 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
   bool _isLoadingUsers = true;
   bool _showSearch = false;
   bool _isUpdating = false;
+  bool _isDeleting = false;
 
   late final Set<String> _originalMemberEmails;
   late final String _leadEmail;
@@ -230,6 +231,85 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
       if (mounted) {
         setState(() {
           _isUpdating = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _deleteTeam() async {
+    // Show confirmation dialog
+    final bool? shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Team Registration'),
+        content: Text(
+          'Are you sure you want to delete the team "${_teamNameController.text.trim()}" from ${widget.event.name}?\n\nThis action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+      final teamId = widget.team['id'].toString();
+      final eventId = widget.event.id;
+
+      // 1. Delete the team document from Teams collection
+      final teamRef = firestore.collection('Teams').doc(teamId);
+      batch.delete(teamRef);
+
+      // 2. Remove team ID from Events collection's teams list
+      final eventRef = firestore.collection('Events').doc(eventId);
+      batch.update(eventRef, {
+        'teams': FieldValue.arrayRemove([teamId]),
+      });
+
+      // 3. Remove event ID from each member's eventsRegistered list
+      for (final member in _members) {
+        final memberEmail = member['email'].toString();
+        final userRef = firestore.collection('Users').doc(memberEmail);
+        batch.update(userRef, {
+          'eventsRegistered': FieldValue.arrayRemove([eventId]),
+        });
+      }
+      final leadRef = firestore.collection('Users').doc(_leadEmail);
+      batch.update(leadRef, {
+        'eventsRegistered': FieldValue.arrayRemove([eventId]),
+      });
+
+      await batch.commit();
+
+      if (!mounted) return;
+      displayMessageToUser(
+        '✅ Team registration deleted successfully!',
+        context,
+        isError: false,
+      );
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      displayMessageToUser('Failed to delete team: $e', context);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
         });
       }
     }
@@ -442,8 +522,25 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
                     ),
                   const SizedBox(height: 32),
                   MyButton(
-                    onTap: _isUpdating ? null : _updateTeam,
+                    onTap: _isUpdating || _isDeleting ? null : _updateTeam,
                     text: _isUpdating ? 'Saving...' : 'Save Changes',
+                  ),
+                  const SizedBox(height: 16),
+                  MyButton(
+                    onTap: _isUpdating || _isDeleting ? null : _deleteTeam,
+                    text: _isDeleting ? 'Deleting...' : 'Delete Registration',
+                    backgroundColor: _isUpdating || _isDeleting ? Colors.grey : Colors.red,
+                    textColor: Colors.white,
+                    icon: _isDeleting 
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Icon(Icons.delete_forever, color: Colors.white, size: 20),
                   ),
                 ],
               ),

@@ -458,7 +458,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  "Phone: $phone • Year: $year",
+                  "Phone: $phone • $year",
                   style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 13,

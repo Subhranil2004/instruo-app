@@ -253,24 +253,19 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
             ),
           );
         },
-        // leading: CircleAvatar(
-        //   backgroundColor: AppTheme.primaryBlue.withOpacity(0.15),
-        //   child: Text(
-        //     event.category.isNotEmpty ? event.category[0].toUpperCase() : '?',
-        //     style: TextStyle(
-        //       color: AppTheme.primaryBlue,
-        //       fontWeight: FontWeight.w600,
-        //     ),
-        //   ),
-        // ),
+        // Make the left content flexible so long event names ellipsize instead of overflowing
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              event.name,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+            Expanded(
+              child: Text(
+                event.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             _buildInfoChip(Icons.category, event.category.toUpperCase()),
           ],
@@ -308,38 +303,41 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
         //     ],
         //   ),
         // ),
-        trailing: FutureBuilder<int>(
-          future: _getEventTeamsCount(event.id),
-          builder: (context, snapshot) {
-            final teamsCount = snapshot.data ?? 0;
-            return IntrinsicHeight(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  VerticalDivider(
-                    color: Colors.grey.shade300,
-                    thickness: 1,
-                    width: 24,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.groups, color: AppTheme.secondaryPurple, size: 20),
-                      const SizedBox(height: 4),
-                      Text(
-                        "$teamsCount team${teamsCount != 1 ? 's' : ''}",
-                        style: TextStyle(
-                          color: AppTheme.secondaryPurple,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+        // Constrain trailing width so it cannot force the title row to overflow
+        trailing: IntrinsicWidth(
+          child: FutureBuilder<int>(
+            future: _getEventTeamsCount(event.id),
+            builder: (context, snapshot) {
+              final teamsCount = snapshot.data ?? 0;
+              return IntrinsicHeight(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    VerticalDivider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                      width: 24,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.groups, color: AppTheme.secondaryPurple, size: 20),
+                        const SizedBox(height: 4),
+                        Text(
+                          "$teamsCount team${teamsCount != 1 ? 's' : ''}",
+                          style: TextStyle(
+                            color: AppTheme.secondaryPurple,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
