@@ -51,12 +51,11 @@ class EventContent extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
-                      height: 250,                                // change image size accordingly
-                      width: double.infinity,
+                    AspectRatio(
+                      aspectRatio: 1.0, // Because your image is 512x512 (1:1 ratio)
                       child: Image.asset(
                         event.image,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.cover, // Use 'cover' to fill the defined aspect ratio space
                       ),
                     ),
                     Padding(

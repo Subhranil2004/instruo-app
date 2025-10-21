@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../theme/theme.dart'; // your theme file
+import '../theme/theme.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/custom_app_bar.dart';
 
@@ -8,86 +8,104 @@ class DirectionsPage extends StatelessWidget {
   const DirectionsPage({super.key});
 
   Future<void> _openMap(double lat, double lng) async {
-  final Uri googleMapUrl = Uri.parse(
-    "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=walking",
-  );
+    final Uri googleMapUrl = Uri.parse(
+      "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=walking",
+    );
 
-  // Always use external application mode for maps
-  final bool launched = await launchUrl(
-    googleMapUrl,
-    mode: LaunchMode.externalApplication,
-  );
+    final bool launched = await launchUrl(
+      googleMapUrl,
+      mode: LaunchMode.externalApplication,
+    );
 
-  if (!launched) {
-    throw 'Could not open the map.';
+    if (!launched) {
+      throw 'Could not open the map.';
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final List<Map<String, dynamic>> locations = [
+      {"name": "First Gate", "lat": 22.557458, "lng": 88.306860},
+      {"name": "Main Academic Building", "lat": 22.555267081275407, "lng": 88.3078943430084},
+      {"name": "Ramanujan Central Library", "lat": 22.555079004722263, "lng": 88.30903870241728},
+      {"name": "Netaji Bhawan", "lat": 22.555952, "lng": 88.307640},
+      {"name": "Registration Desk", "lat": 22.55594452231021, "lng": 88.30817220046201},
+      {"name": "Lords", "lat": 22.55594452231021, "lng": 88.30817220046201},
+      {"name": "Institute Hall", "lat": 22.555509, "lng": 88.306651},
+      {"name": "S & T Building", "lat": 22.554009, "lng": 88.306425},
+      {"name": "Hospital", "lat": 22.557001, "lng": 88.305366},
+      {"name": "Alumni Seminar Hall", "lat": 22.554009, "lng": 88.306425},
+      {"name": "Sengupta Hall", "lat": 22.555900264546455, "lng": 88.31015481809995},
+      {"name": "Sen Hall", "lat": 22.556045171036878, "lng": 88.30938234193817},
+    ];
+
     return Scaffold(
-       appBar:  CustomAppBar(
-        title: "CAMPUS DIRECTION",
+      appBar: const CustomAppBar(
+        title: "CAMPUS MAP",
         showBackButton: false,
         showProfileButton: false,
       ),
-      drawer: AppDrawer(), // your app drawer
+      drawer: const AppDrawer(),
       backgroundColor: theme.colorScheme.background,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Text(
-              "Select a Location",
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            _buildLocationButton(context, "First Gate", 22.557458, 88.306860),
-            _buildLocationButton(context, "Main Academic Building", 22.555267081275407, 88.3078943430084),
-            _buildLocationButton(context, "Ramanujan Central Library", 22.555079004722263, 88.30903870241728),
-            _buildLocationButton(context, "Netaji Bhawan", 22.555952, 88.307640),
-            _buildLocationButton(context, "Registration Desk", 22.55594452231021, 88.30817220046201),
-            _buildLocationButton(context, "Lords", 22.55594452231021, 88.30817220046201),
-            _buildLocationButton(context, "Institute Hall", 22.555509, 88.306651),
-            _buildLocationButton(context, "S & T Building", 22.554009, 88.306425),
-            _buildLocationButton(context, "Hospital", 22.557001, 88.305366),
-            _buildLocationButton(context, "Alumni Seminar Hall", 22.554009, 88.306425),
-            _buildLocationButton(context, "Sengupta Hall", 22.555900264546455, 88.31015481809995),
-            _buildLocationButton(context, "Sen Hall", 22.556045171036878, 88.30938234193817),
-          ],
+        child: ListView.builder(
+          itemCount: locations.length,
+          itemBuilder: (context, index) {
+            final loc = locations[index];
+            return _buildLocationTile(
+              context,
+              loc["name"],
+              loc["lat"],
+              loc["lng"],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildLocationButton(
+  Widget _buildLocationTile(
       BuildContext context, String name, double lat, double lng) {
-    final theme = Theme.of(context);
+    final String initial = name.isNotEmpty ? name[0].toUpperCase() : "?";
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: theme.colorScheme.primary,
-          foregroundColor: theme.colorScheme.onPrimary,
-          minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 3,
+    return GestureDetector(
+      onTap: () => _openMap(lat, lng), // Directly call the original map logic
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryBlue.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.1)),
         ),
-        onPressed: () => _openMap(lat, lng),
-        child: Text(
-          "$name",
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+              child: Text(
+                initial,
+                style: TextStyle(
+                  color: AppTheme.primaryBlue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                color: AppTheme.primaryBlue, size: 18),
+          ],
         ),
       ),
     );

@@ -172,7 +172,7 @@ class _AppDrawerState extends State<AppDrawer> {
           _buildDrawerItem(
             context,
             icon: Icons.directions,
-            text: "Campus Direction",
+            text: "Campus Map",
             onTap: () => _onTapNavigate(
               context,
               '/direction',

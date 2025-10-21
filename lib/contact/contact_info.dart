@@ -1,38 +1,102 @@
 // lib/contact_info.dart
-
 class ContactInfo {
   final String name;
   final String role;
   final String phone;
+  final String section;
 
   ContactInfo({
     required this.name,
     required this.role,
     required this.phone,
+    required this.section,
   });
 }
+
+// Main Coordinator
+// Joint Coordinator
+// Finance
+// Sponsorship
+// Event
+// Robodarshan
+// Travel and Logistics
+// Web Development
+// App Development
+// Design and Content
+// Publicity
+// Volunteer
 
 /// Core team contacts (hardcoded for now)
 final List<ContactInfo> coreTeamContacts = [
   ContactInfo(
-    name: "Ajeet Kumar",
-    role: "Fest Coordinator",
-    phone: "+919161705253",
+    name: "Ayush Tejaswi",
+    role: "Main Coordinator",
+    phone: "8368033554",
+    section: "Main Coordinator"
   ),
   ContactInfo(
-    name: "Rohit Mehta",
-    role: "Technical Head",
-    phone: "+919123456780",
+    name: "Aaratrika Sarkar ",
+    role: "Main Coordinator",
+    phone: "9481961973",
+    section: "Main Coordinator"
   ),
   ContactInfo(
-    name: "Sneha Das",
-    role: "Robotics Head",
-    phone: "+919988776655",
+    name: "Satish Gupta",
+    role: "Main Coordinator",
+    phone: "6291290730",
+    section: "Main Coordinator"
+  ),
+  //
+  ContactInfo(
+    name: "Harshit Kumar",
+    role: "Head",
+    phone: "8809932888",
+    section: "App Development"
   ),
   ContactInfo(
-    name: "Arjun Verma",
-    role: "Gaming Head",
-    phone: "+919012345678",
+    name: "Subhranil Nandy",
+    role: "Head",
+    phone: "8809932888",
+    section: "App Development"
   ),
-  // ➕ add more here (40+ people if needed)
+  //
+  ContactInfo(
+    name: "Pranjal Diwakar",
+    role: "Head",
+    phone: "8355087594",
+    section: "Joint Coordinator"
+  ),
+  ContactInfo(
+    name: "Sohom Chakraborty",
+    role: "Head",
+    phone: "9331809512",
+    section: "Joint Coordinator"
+  ),
+  //
+  ContactInfo(
+    name: "Arman Choudhary",
+    role: "Head",
+    phone: "9667251975",
+    section: "Finance"
+  ),
+  ContactInfo(
+    name: "Saurav Kumar",
+    role: "Head",
+    phone: "",
+    section: "Finance"
+  ),
+  ContactInfo(
+    name: "Shreyansh Srivastva",
+    role: "Head",
+    phone: "",
+    section: "Finance"
+  ),
+  ContactInfo(
+    name: "Ayush Ranjan",
+    role: "Executive",
+    phone: "",
+    section: "Finance"
+  ),
+  //
+
 ];

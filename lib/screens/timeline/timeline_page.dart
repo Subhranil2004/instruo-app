@@ -35,7 +35,7 @@ class _TimelinePageState extends State<TimelinePage> {
     });
     _pageController.animateToPage(
       index,
-      duration: const Duration(milliseconds: 200), // Adjust this value for speed
+      duration: const Duration(milliseconds: 50), // Adjust this value for speed
       curve: Curves.fastOutSlowIn,
     );
   }
@@ -53,116 +53,125 @@ class _TimelinePageState extends State<TimelinePage> {
   }
 
   Widget _buildDayContent(int dayIdx) {
-    final events = timelineData[dayIdx] ?? [];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
+  final events = timelineData[dayIdx] ?? [];
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Events',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: events.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.event_busy,
+                        size: 64,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.9),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No events scheduled for ${_dayTitle(dayIdx)}.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final e = events[index];
+                    return _buildEventTile(e, index + 1);
+                  },
+                ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildEventTile(dynamic e, int eventNumber) {
+  // Use dynamic type if your timelineData entries are not typed
+  return Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    elevation: 4,
+    margin: const EdgeInsets.only(bottom: 16),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Events',
-            style: Theme.of(context).textTheme.headlineMedium,
+          CircleAvatar(
+            backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+            child: Text(
+              eventNumber.toString(),
+              style: const TextStyle(
+                  color: AppTheme.primaryBlue, fontWeight: FontWeight.bold),
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(width: 16),
           Expanded(
-            child: events.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.event_busy,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'No events scheduled for ${_dayTitle(dayIdx)}.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.separated(
-                    itemCount: events.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, i) {
-                      final e = events[i];
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 72,
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      e.time,
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                            color: Theme.of(context).colorScheme.primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      height: 6,
-                                      width: 6,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      e.title,
-                                      style: Theme.of(context).textTheme.titleLarge,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.place,
-                                          size: 16,
-                                          color: Colors.grey,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Flexible(
-                                          child: Text(
-                                            e.venue,
-                                            style: Theme.of(context).textTheme.bodySmall,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  e.title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    _buildInfoChip(Icons.access_time, e.time,
+                        AppTheme.primaryBlue),
+                    _buildInfoChip(Icons.place, e.venue, AppTheme.secondaryPurple),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildInfoChip(IconData icon, String text, Color color) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: TextStyle(
+              color: color, fontSize: 13, fontWeight: FontWeight.w500),
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
