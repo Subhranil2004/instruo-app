@@ -95,7 +95,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             if (_isRegistered) {
                               // Contact coordinator to edit registration
 
-                              displayMessageToUser("ℹ️ Contact the event coordinator for editing or deleting your registration.", context, isError: false, durationSeconds: 4);
+                              displayMessageToUser("ℹ️ Contact the event coordinator for editing or deleting your registration.", context, isError: false, durationSeconds: 2);
                             } else {
                               // Navigate to register page
                               Navigator.push(

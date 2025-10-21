@@ -341,10 +341,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                         const SizedBox(height: 12),
                         MyTextField(
                           controller: _teamNameController,
-                          labelText: widget.event.maxTeamSize == 1 ? "Your Name" : "Team Name",
-                          hintText: widget.event.maxTeamSize == 1 
-                              ? "Enter your name" 
-                              : "Enter your team name",
+                          labelText: "Team Name",
+                          hintText: "Enter your team name",
                         ),
                         const SizedBox(height: 24),
 
