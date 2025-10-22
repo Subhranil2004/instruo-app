@@ -41,6 +41,8 @@ dependencies:
   firebase_core: ^4.1.1
   firebase_auth: ^6.1.0
   cloud_firestore: ^6.0.2
+  image_picker: ^1.2.0
+  firebase_storage: ^13.0.3
 
 dev_dependencies:
   flutter_test:
@@ -95,5 +97,7 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/app-icon.png"
+  # background_color: "#121212"       # For Older Devices
+  adaptive_icon_background: "#121212" # For Android 8.0+ adaptive icons
   remove_alpha_ios: true
   min_sdk_android: 21
