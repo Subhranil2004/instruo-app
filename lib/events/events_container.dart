@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/custom_app_bar.dart';
-import 'event_content.dart'; // Import the single, consolidated widget
+import 'event_content.dart';
 
 /// Container widget that holds all event pages with smooth transitions
-/// and a constant "EVENTS" app bar. Uses IndexedStack to keep all pages in memory.
+/// and a constant "EVENTS" app bar. Uses PageView for swipe support.
 class EventsContainer extends StatefulWidget {
   final int initialIndex;
 
@@ -16,8 +16,9 @@ class EventsContainer extends StatefulWidget {
 
 class _EventsContainerState extends State<EventsContainer> {
   late int _currentIndex;
+  late PageController _pageController;
 
-  // Define the list of event categories here
+  // Define the list of event categories
   final List<String> _eventCategories = [
     'technical',
     'general',
@@ -29,12 +30,22 @@ class _EventsContainerState extends State<EventsContainer> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: _currentIndex);
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Called when bottom nav is tapped
   void _onTabChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -45,11 +56,16 @@ class _EventsContainerState extends State<EventsContainer> {
         showBackButton: false,
       ),
       drawer: AppDrawer(),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _eventCategories.map((category) {
-          return EventContent(category: category); // Use the single widget for all categories
-        }).toList(),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        children: _eventCategories
+            .map((category) => EventContent(category: category))
+            .toList(),
       ),
       bottomNavigationBar: EventsBottomNavLocal(
         currentIndex: _currentIndex,

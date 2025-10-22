@@ -35,9 +35,9 @@ class _HomePageState extends State<HomePage> {
 
   final List<Map<String, String>> eventTypes = [
     {"title": "Technical", "image": "assets/tech.png"},
+    {"title": "General", "image": "assets/general.png"},
     {"title": "Robotics", "image": "assets/robotics.png"},
     {"title": "Gaming", "image": "assets/gaming.png"},
-    {"title": "General", "image": "assets/general.png"},
   ];
 
   @override

@@ -159,13 +159,20 @@ Widget _buildInfoChip(IconData icon, String text, Color color) {
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 16, color: color),
         const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(
-              color: color, fontSize: 13, fontWeight: FontWeight.w500),
+        Flexible( // ✅ allows text to wrap instead of overflowing
+          child: Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            softWrap: true,
+          ),
         ),
       ],
     ),

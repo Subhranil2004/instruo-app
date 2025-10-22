@@ -125,49 +125,48 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
                         // Rules Button
                         if (widget.event.rules != null)
-  Center(
-    child: Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(12),
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          launchDialer(widget.event.rules!, context, isUrl: true);
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryBlue.withOpacity(0.1), // translucent
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppTheme.primaryBlue.withOpacity(0.3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.rule, color: AppTheme.primaryBlue),
-              const SizedBox(width: 8),
-              Text(
-                "View Rules",
-                style: TextStyle(
-                  color: AppTheme.primaryBlue,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  ),
+                        Center(
+                          child: Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                launchDialer(widget.event.rules!, context, isUrl: true);
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withOpacity(0.1), // translucent
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppTheme.primaryBlue.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.rule, color: AppTheme.primaryBlue),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "View Rules",
+                                      style: TextStyle(
+                                        color: AppTheme.primaryBlue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 15),
 
-                        // Coordinator section
                         Text(
-                          "Event Coordinator:",
+                          "Prize Pool:",
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -175,67 +174,104 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         ),
                         const SizedBox(height: 8),
 
-                        if (widget.event.coordinator != null &&
-                            widget.event.phone != null)
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 14),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: AppTheme.primaryBlue.withOpacity(0.1)),
-                            ),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      AppTheme.primaryBlue.withOpacity(0.1),
-                                  radius: 24,
-                                  child: Text(
-                                    widget.event.coordinator![0].toUpperCase(),
+                        if (widget.event.prizePool.isNotEmpty)
+                          Center(
+                            child: Wrap(
+                              spacing: 6, // horizontal spacing between chips
+                              runSpacing: 6, // vertical spacing between lines
+                              alignment: WrapAlignment.center,
+                              children: widget.event.prizePool.entries.map((e) {
+                                return Chip(
+                                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+                                  label: Text(
+                                    "₹${e.value}",
                                     style: TextStyle(
                                       color: AppTheme.primaryBlue,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.event.coordinator!,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        "Coordinator",
-                                        style: TextStyle(
-                                          color: AppTheme.textSecondary,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+
+
+                        // Coordinator section
+                        // Coordinator section
+                        Text(
+                          "Event Coordinators:",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+
+                        if (widget.event.coordinators.isNotEmpty)
+                          Column(
+                            children: widget.event.coordinators.map((coordinator) {
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 14),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppTheme.primaryBlue.withOpacity(0.1),
                                   ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.phone, color: Colors.green),
-                                  tooltip: "Call ${widget.event.coordinator}",
-                                  onPressed: () => launchDialer(
-                                      widget.event.phone!, context),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+                                      radius: 24,
+                                      child: Text(
+                                        coordinator.name.isNotEmpty
+                                            ? coordinator.name[0].toUpperCase()
+                                            : '?',
+                                        style: TextStyle(
+                                          color: AppTheme.primaryBlue,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            coordinator.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            "Coordinator",
+                                            style: TextStyle(
+                                              color: AppTheme.textSecondary,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.phone, color: Colors.green),
+                                      tooltip: "Call ${coordinator.name}",
+                                      onPressed: () => launchDialer(coordinator.phone, context),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           )
                         else
                           const Text("Details will be announced soon."),
+
                         const SizedBox(height: 60), // extra bottom padding
                       ],
                     ),

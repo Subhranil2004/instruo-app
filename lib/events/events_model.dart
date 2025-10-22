@@ -1,3 +1,27 @@
+class Coordinator {
+  final String name;
+  final String phone;
+
+  Coordinator({
+    required this.name,
+    required this.phone,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'phone': phone,
+    };
+  }
+
+  factory Coordinator.fromMap(Map<String, dynamic> map) {
+    return Coordinator(
+      name: map['name'] ?? '',
+      phone: map['phone'] ?? '',
+    );
+  }
+}
+
 class Event {
   final String id;
   final String category;
@@ -8,8 +32,9 @@ class Event {
   final int minTeamSize;
   final int maxTeamSize;
   final int fee;
-  final String coordinator;
-  final String phone;
+  final List<Coordinator> coordinators;
+  final Map<String, int> prizePool; // keys: "first", "second", "third"
+  final String gform; // Google Form link
 
   Event({
     required this.id,
@@ -21,39 +46,45 @@ class Event {
     required this.minTeamSize,
     required this.maxTeamSize,
     this.fee = 0,
-    required this.coordinator,
-    required this.phone,
+    required this.coordinators,
+    required this.prizePool,
+    required this.gform, // add here
   });
 
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
-      "category": category,
-      "name": name,
-      "image": image,
-      "description": description,
-      "rules": rules,
-      "minTeamSize": minTeamSize,
-      "maxTeamSize": maxTeamSize,
-      "fee": fee,
-      "coordinator": coordinator,
-      "phone": phone,
+      'id': id,
+      'category': category,
+      'name': name,
+      'image': image,
+      'description': description,
+      'rules': rules,
+      'minTeamSize': minTeamSize,
+      'maxTeamSize': maxTeamSize,
+      'fee': fee,
+      'coordinators': coordinators.map((c) => c.toMap()).toList(),
+      'prizePool': prizePool,
+      'gform': gform, // add here
     };
   }
 
   factory Event.fromMap(Map<String, dynamic> map) {
     return Event(
-      id: map["id"] ?? "",
-      category: map["category"] ?? "",
-      name: map["name"] ?? "",
-      image: map["image"] ?? "",
-      description: map["description"] ?? "",
-      rules: map["rules"] ?? "",
-      minTeamSize: map["minTeamSize"] ?? 1,
-      maxTeamSize: map["maxTeamSize"] ?? 1,
-      fee: map["fee"] ?? 0,
-      coordinator: map["coordinator"] ?? "",
-      phone: map["phone"] ?? "",
+      id: map['id'] ?? '',
+      category: map['category'] ?? '',
+      name: map['name'] ?? '',
+      image: map['image'] ?? '',
+      description: map['description'] ?? '',
+      rules: map['rules'] ?? '',
+      minTeamSize: map['minTeamSize'] ?? 1,
+      maxTeamSize: map['maxTeamSize'] ?? 1,
+      fee: map['fee'] ?? 0,
+      coordinators: (map['coordinators'] as List?)
+              ?.map((c) => Coordinator.fromMap(c))
+              .toList() ??
+          [],
+      prizePool: Map<String, int>.from(map['prizePool'] ?? {}),
+      gform: map['gform'] ?? '', // add here
     );
   }
 }
