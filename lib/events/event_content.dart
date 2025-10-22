@@ -13,11 +13,9 @@ class EventContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Filter the events based on the provided category
     final List<Event> filteredEvents =
         events.where((event) => event.category == category).toList();
 
-    // Check if any events are found for the category
     if (filteredEvents.isEmpty) {
       return const Center(
         child: Text('No events found for this category.'),
@@ -25,9 +23,8 @@ class EventContent extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
         itemCount: filteredEvents.length,
         itemBuilder: (context, index) {
           final event = filteredEvents[index];
@@ -37,43 +34,72 @@ class EventContent extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => EventDetailPage(event: event),
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(milliseconds: 600),
+                    pageBuilder: (_, __, ___) => EventDetailPage(event: event),
                   ),
                 );
               },
-              child: Card(
-                shape: RoundedRectangleBorder(
+              child: Hero(
+                tag: event.name, // unique hero tag for animation
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 6,
-                clipBehavior: Clip.hardEdge,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1.0, // Because your image is 512x512 (1:1 ratio)
-                      child: Image.asset(
-                        event.image,
-                        fit: BoxFit.cover, // Use 'cover' to fill the defined aspect ratio space
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      // Background image
+                      AspectRatio(
+                        aspectRatio: 1.5,
+                        child: Image.asset(
+                          event.image,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        event.name,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
+
+                      // Gradient overlay (for readability)
+                      Container(
+                        height: 120,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black87,
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+
+                      // Event name text
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        right: 16,
+                        child: Text(
+                          event.name,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 6.0,
+                                    color: Colors.black45,
+                                    offset: Offset(2, 2),
+                                  ),
+                                ],
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-
             ),
           );
         },
-      )
+      ),
     );
   }
 }
