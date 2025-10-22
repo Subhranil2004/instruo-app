@@ -63,9 +63,17 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
         final phone = userData?['phone'] ?? '';
         final department = userData?['department'] ?? '';
         final year = userData?['year'] ?? '';
+        final iiestian = userData?['iiestian'] ?? false;
+        final idCard = userData?['ID_card'] ?? '';
 
         if (phone.isEmpty || department.isEmpty || year.isEmpty) {
           displayMessageToUser("Please complete your profile first", context);
+          Navigator.pop(context);
+          return;
+        }
+        if (iiestian && idCard.isEmpty) {
+          print("ID Card: $idCard");
+          displayMessageToUser("Please upload your IIEST ID card in profile", context);
           Navigator.pop(context);
           return;
         }
@@ -99,12 +107,19 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
               'year': data['year'] ?? '',
             };
           })
-          .where((user) => 
-              user['name']!.isNotEmpty && 
-              user['phone']!.isNotEmpty && 
-              user['department']!.isNotEmpty && 
-              user['collegeName']!.isNotEmpty &&
-              user['year']!.isNotEmpty) // Only include users with complete profiles
+          .where((user) {
+            final hasBasic = user['name']!.isNotEmpty &&
+                user['phone']!.isNotEmpty &&
+                user['department']!.isNotEmpty &&
+                user['collegeName']!.isNotEmpty &&
+                user['year']!.isNotEmpty;
+
+            // If iiestian is true, require ID_card to be present and non-empty
+            final isIIESTian = (user.containsKey('iiestian') && user['iiestian'] == true);
+            final hasIdCard = user.containsKey('ID_card') && (user['ID_card'] != null) && user['ID_card'].toString().isNotEmpty;
+
+            return hasBasic && (isIIESTian ? hasIdCard : true);
+          }) // Only include users with complete profiles
           .toList();
 
       setState(() {
