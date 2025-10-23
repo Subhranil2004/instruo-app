@@ -217,6 +217,32 @@ class _AppDrawerState extends State<AppDrawer> {
               (ctx) => ContactUsPage(),
             ),
           ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: ListTile(
+              leading: Icon(Icons.info_outline, color: AppTheme.primaryBlue),
+              // title: Text(
+              //   'Theme',
+              //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              // ),
+              subtitle: const Text(
+                'This app follows your device theme.',
+              ),
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (c) => AlertDialog(
+                    title: const Text('Theme'),
+                    content: const Text('This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.of(c).pop(), child: const Text('OK')),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
