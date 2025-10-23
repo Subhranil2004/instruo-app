@@ -56,7 +56,7 @@ final List<ContactInfo> coreTeamContacts = [
   ContactInfo(
     name: "Subhranil Nandy",
     role: "Head",
-    phone: "8809932888",
+    phone: "9123771737",
     section: "App Development"
   ),
   //

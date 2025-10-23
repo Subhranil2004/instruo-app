@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/widgets/my_button.dart';
@@ -25,6 +28,12 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   List<Map<String, dynamic>> _allUsers = [];
   List<Map<String, dynamic>> _filteredUsers = [];
   List<Map<String, dynamic>> _selectedMembers = [];
+  // Payment screenshot state
+  File? _selectedPaymentSSFile;
+  bool _isUploadingPaymentSS = false;
+  // track current user's iiestian flag so fee calculation is correct
+  bool _currentUserIsIIESTian = true;
+  // ID card upload is handled in profile_page.dart; no local state required here
   bool _isLoadingUsers = true;
   bool _showSearch = false;
   bool _isRegistering = false;
@@ -66,6 +75,11 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
         final iiestian = userData?['iiestian'] ?? false;
         final idCard = userData?['ID_card'] ?? '';
 
+        // store current user's iiestian flag for fee calculations
+        setState(() {
+          _currentUserIsIIESTian = iiestian == true;
+        });
+
         if (phone.isEmpty || department.isEmpty || year.isEmpty) {
           displayMessageToUser("Please complete your profile first", context);
           Navigator.pop(context);
@@ -105,6 +119,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
               'department': data['department'] ?? '',
               'collegeName': data['collegeName'] ?? '',
               'year': data['year'] ?? '',
+              'iiestian': data['iiestian'] ?? false,
+              'ID_card': data['ID_card'],
             };
           })
           .where((user) {
@@ -136,8 +152,9 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
   void _searchUsers(String query) {
     if (query.isEmpty) {
+      // When the search query is empty, show all available users
       setState(() {
-        _filteredUsers = [];
+        _filteredUsers = List<Map<String, dynamic>>.from(_allUsers);
       });
       return;
     }
@@ -184,31 +201,6 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   }
 
   Future<void> _registerForEvent() async {
-    if (_teamNameController.text.trim().isEmpty) {
-      displayMessageToUser(
-        widget.event.maxTeamSize == 1 ? "Please enter your name" : "Please enter team name", 
-        context
-      );
-      return;
-    }
-
-    final totalMembers = _selectedMembers.length + 1; // +1 for current user
-    
-    if (totalMembers < widget.event.minTeamSize) {
-      displayMessageToUser(
-        "Minimum team size is ${widget.event.minTeamSize}. You have $totalMembers member(s)", 
-        context
-      );
-      return;
-    }
-
-    if (totalMembers > widget.event.maxTeamSize) {
-      displayMessageToUser(
-        "Maximum team size is ${widget.event.maxTeamSize}. You have $totalMembers member(s)", 
-        context
-      );
-      return;
-    }
 
     setState(() {
       _isRegistering = true;
@@ -216,6 +208,45 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
     try {
       final firestore = FirebaseFirestore.instance;
+
+      // Count non-IIESTIAN users (they pay)
+      int nonIIESTIANCount = 0;
+      // include current user
+      if (!_currentUserIsIIESTian) nonIIESTIANCount += 1;
+      // include selected members
+      nonIIESTIANCount += _selectedMembers.where((m) => (m['iiestian'] == null || m['iiestian'] == false)).length;
+
+      final totalAmount = widget.event.fee * nonIIESTIANCount;
+
+      // If payment is required (amount > 0) ensure a payment screenshot is provided
+      if (totalAmount > 0 && _selectedPaymentSSFile == null) {
+        // show snackbar error and abort
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Payment of ₹$totalAmount required for non-IIESTIAN members. Please upload payment screenshot.')),
+        );
+        setState(() { _isRegistering = false; });
+        return;
+      }
+
+      String? paymentDownloadUrl;
+      // If a new payment ss is selected, upload it
+      if (_selectedPaymentSSFile != null) {
+        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
+
+        try {
+          setState(() { _isUploadingPaymentSS = true; });
+          final uploadTask = storageRef.putFile(_selectedPaymentSSFile!);
+          final snapshot = await uploadTask.whenComplete(() => {});
+          paymentDownloadUrl = await snapshot.ref.getDownloadURL();
+          setState(() { _isUploadingPaymentSS = false; });
+        } catch (e) {
+          setState(() { _isUploadingPaymentSS = false; _isRegistering = false; });
+          displayMessageToUser('Failed to upload payment screenshot: $e', context);
+          return;
+        }
+      }
 
       // Use a single batched write to create the team and update Events and Users
       final batch = firestore.batch();
@@ -231,6 +262,12 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
         'createdAt': FieldValue.serverTimestamp(),
         'tid': teamId,
       };
+
+      // attach payment screenshot url if available
+      if (paymentDownloadUrl != null && paymentDownloadUrl.isNotEmpty) {
+        teamData['payment_ss'] = paymentDownloadUrl;
+      }
+
       batch.set(teamRef, teamData);
 
       // Update Events collection - add team id to event's teams array (merge)
@@ -264,12 +301,98 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       
       Navigator.pop(context);
     } catch (e) {
-      displayMessageToUser("Registration failed: $e", context, durationSeconds: 6);
+      displayMessageToUser("Registration failed: $e", context, durationSeconds: 4);
     } finally {
       setState(() {
         _isRegistering = false;
       });
     }
+  }
+
+  // ID card selection handled in profile page
+
+  // Payment screenshot pick (separate from ID card)
+  Future<void> _pickPaymentImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: source);
+      if (picked != null) {
+        setState(() {
+          _selectedPaymentSSFile = File(picked.path);
+        });
+      }
+    } catch (e) {
+      displayMessageToUser('Payment screenshot selection failed.', context);
+    }
+  }
+
+  // Show confirmation dialog before finalizing registration
+  void _onRegisterPressed() {
+    // Pre-checks: team size and payment screenshot requirement
+    final totalMembers = _selectedMembers.length + 1; // +1 for current user
+    if (totalMembers < widget.event.minTeamSize) {
+      displayMessageToUser(
+        "Minimum team size is ${widget.event.minTeamSize}. You have $totalMembers member(s)",
+        context,
+      );
+      return;
+    }
+
+    // compute total amount similar to _registerForEvent for display
+    int nonIIESTIANCount = 0;
+    if (!_currentUserIsIIESTian) nonIIESTIANCount += 1;
+    nonIIESTIANCount += _selectedMembers.where((m) => (m['iiestian'] == null || m['iiestian'] == false)).length;
+    final totalAmount = widget.event.fee * nonIIESTIANCount;
+
+
+    if (_teamNameController.text.trim().isEmpty) {
+      displayMessageToUser(
+        widget.event.maxTeamSize == 1 ? "Please enter your name" : "Please enter team name", 
+        context
+      );
+      return;
+    }
+
+    // If payment is required ensure a payment screenshot is provided BEFORE showing confirmation
+    if (totalAmount > 0 && _selectedPaymentSSFile == null) {
+      displayMessageToUser('Payment of ₹$totalAmount required for $nonIIESTIANCount non-IIESTIAN member(s). Please upload payment screenshot.', context, durationSeconds: 4);
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm Registration', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('You are about to register for "${widget.event.name}"'),
+              const SizedBox(height: 8),
+                if (totalAmount > 0) ...[
+                const SizedBox(height: 8),
+                Text('Total amount due: ₹$totalAmount', style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              ],
+              Text('Please ensure the payment screenshot (if any) is clear and all details are correct. Registration will be unmodifiable afterwards without coordinator intervention.'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _registerForEvent();
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -526,6 +649,13 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                                                 color: Colors.grey.shade600,
                                               ),
                                             ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "1. Ask them to complete their profile\n2. IIESTians need to upload their IDs",
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -586,7 +716,52 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                             const SizedBox(height: 16),
                           ],
                         ],
+                        const SizedBox(height: 32),
+                        // UPI QR Code
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            'assets/upi_qr.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
 
+                        const SizedBox(height: 12),
+
+                        // Payment Screenshot upload (for non-IIESTIAN payments)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    "Upload Payment Screenshot:",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  IconButton(
+                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
+                                        : () => _pickPaymentImage(ImageSource.gallery),
+                                    icon: const Icon(Icons.upload_file, color: AppTheme.primaryBlue, size: 24.0),
+                                  ),
+                                  const Text('or'),
+                                  IconButton(
+                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
+                                        : () => _pickPaymentImage(ImageSource.camera),
+                                    icon: Icon(Icons.camera_alt_outlined, color: AppTheme.primaryBlue, size: 24.0),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              _buildPaymentSSPreview(),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
                         // Register Button at bottom of content
                         const SizedBox(height: 32),
                         _isRegistering
@@ -621,14 +796,72 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                               )
                             : MyButton(
                                 text: 'Register for Event',
-                                onTap: _registerForEvent,
+                                onTap: _onRegisterPressed,
                               ),
-                        const SizedBox(height: 32),
+                        // const SizedBox(height: 32),
                 ],
               ),
             ),
     );
   }
+
+  // ID card preview and upload removed from this page; handled in profile_page.dart
+
+  Widget _buildPaymentSSPreview() {
+    final double previewHeight = 150;
+    if (_selectedPaymentSSFile != null) {
+      return Stack(
+        alignment: Alignment.topRight,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey.shade100,
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.file(
+                _selectedPaymentSSFile!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 6,
+            top: 6,
+            child: IconButton(
+                    onPressed: () {
+                      setState(() { _selectedPaymentSSFile = null; });
+                    },
+                    icon: const CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.delete, size: 18, color: Colors.redAccent),
+                    ),
+                  ),
+          ),
+        ],
+      );
+    }
+
+    // Only local selection is supported in this page; no existing remote URL
+
+    return Container(
+      height: previewHeight,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey.shade50,
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Center(
+        child: Text('No payment screenshot uploaded', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600)),
+      ),
+    );
+  }
+
 
   Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
     return Row(

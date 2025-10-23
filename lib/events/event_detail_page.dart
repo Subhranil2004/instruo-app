@@ -5,7 +5,6 @@ import 'package:instruo_application/helper/helper_functions.dart';
 import 'events_model.dart';
 import "../theme/theme.dart";
 import "../widgets/app_drawer.dart";
-import "../widgets/custom_app_bar.dart";
 import 'event_register_page.dart';
 
 class EventDetailPage extends StatefulWidget {
@@ -63,36 +62,23 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 pinned: true,
                 backgroundColor: Colors.black,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Text(widget.event.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                              color: Colors.black45,
-                              blurRadius: 4,
-                              offset: Offset(1, 1))
-                        ],
-                      )),
+                  title: Text(
+                    widget.event.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [Shadow(color: Colors.black45, blurRadius: 4, offset: Offset(1, 1))],
+                    ),
+                  ),
                   background: Hero(
                     tag: widget.event.name,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.asset(
-                          widget.event.image,
-                          fit: BoxFit.cover,
-                        ),
+                        Image.asset(widget.event.image, fit: BoxFit.cover),
                         Container(
                           decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black54,
-                              ],
-                            ),
+                            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black54]),
                           ),
                         ),
                       ],
@@ -105,23 +91,16 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 child: SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 20.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Description
                         Text(
                           widget.event.description,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white.withOpacity(0.9)
-                                    : Colors.black.withOpacity(0.85),
-                                height: 1.4,
-                              ),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
 
                         // Rules Button
                         if (widget.event.rules != null)
@@ -271,8 +250,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           )
                         else
                           const Text("Details will be announced soon."),
-
-                        const SizedBox(height: 60), // extra bottom padding
+                        const SizedBox(height: 200), // extra bottom padding
                       ],
                     ),
                   ),
@@ -282,75 +260,56 @@ class _EventDetailPageState extends State<EventDetailPage> {
           ),
 
           // Floating register/edit button
-         if (!_isLoading)
-          Positioned(
-            bottom: 50,
-            right: 20,
-            child: Material(
-              elevation: 6,
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  if (_isRegistered) {
-                    displayMessageToUser(
-                      "ℹ️ Contact the coordinator for editing your registration.",
-                      context,
-                      isError: false,
-                      durationSeconds: 2,
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            EventRegisterPage(event: widget.event),
-                      ),
-                    ).then((_) => _checkRegistrationStatus());
-                  }
-                },
+          if (!_isLoading)
+            Positioned(
+              bottom: 50,
+              right: 20,
+              child: Material(
+                elevation: 6,
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: (_isRegistered
-                            ? AppTheme.secondaryPurple
-                            : AppTheme.primaryBlue)
-                        .withOpacity(0.1), // soft translucent background
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: (_isRegistered
-                              ? AppTheme.secondaryPurple
-                              : AppTheme.primaryBlue)
-                          .withOpacity(0.3), // subtle border
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (_isRegistered) {
+                      displayMessageToUser("ℹ️ Contact the coordinator for editing your registration.", context, isError: false, durationSeconds: 2);
+                    } else {
+                      // If event is in Robotics category or one of specific events, direct to GForm
+                      final eventId = widget.event.id;
+                      final eventCategory = widget.event.category.toLowerCase();
+                      const gformEvents = ['gen1', 'gen3', 'tech7'];
+                      if (eventCategory == 'robotics' || gformEvents.contains(eventId)) {
+                        displayMessageToUser('Register through Google Form', context, isError: false, durationSeconds: 3);
+                        return;
+                      }
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EventRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: (_isRegistered ? AppTheme.secondaryPurple : AppTheme.primaryBlue).withOpacity(0.1), // soft translucent background
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: (_isRegistered ? AppTheme.secondaryPurple : AppTheme.primaryBlue).withOpacity(0.3), // subtle border
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _isRegistered ? Icons.edit : Icons.person_add,
-                        color: _isRegistered
-                            ? AppTheme.secondaryPurple
-                            : AppTheme.primaryBlue,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _isRegistered ? "Edit Registration" : "Register",
-                        style: TextStyle(
-                          color: _isRegistered
-                              ? AppTheme.secondaryPurple
-                              : AppTheme.primaryBlue,
-                          fontWeight: FontWeight.w600,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(_isRegistered ? Icons.edit : Icons.person_add, color: _isRegistered ? AppTheme.secondaryPurple : AppTheme.primaryBlue),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isRegistered ? "Edit Registration" : "Register",
+                          style: TextStyle(color: _isRegistered ? AppTheme.secondaryPurple : AppTheme.primaryBlue, fontWeight: FontWeight.w600),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-
         ],
       ),
     );

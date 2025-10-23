@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../helper/helper_functions.dart';
 import '../../theme/theme.dart';
@@ -521,6 +522,13 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
                       },
                     ),
                   const SizedBox(height: 32),
+                    // Payment screenshot preview (if available in team data)
+                  
+                  if (widget.team.containsKey('payment_ss') && (widget.team['payment_ss'] ?? '').toString().isNotEmpty) ...[
+                    _buildPaymentSSPreview(widget.team['payment_ss'].toString()),
+                    const SizedBox(height: 16),
+                  ],
+                  const SizedBox(height: 32),
                   MyButton(
                     onTap: _isUpdating || _isDeleting ? null : _updateTeam,
                     text: _isUpdating ? 'Saving...' : 'Save Changes',
@@ -545,6 +553,31 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildPaymentSSPreview(String url) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Payment Screenshot', Icons.image),
+        const SizedBox(height: 8),
+        ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              url,
+              // height: 140,
+              // width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 140,
+                color: Colors.grey.shade200,
+                child: Center(child: Text('Unable to load image', style: TextStyle(color: AppTheme.textSecondary))),
+              ),
+            ),
+          ),
+        // ),
+      ],
     );
   }
 

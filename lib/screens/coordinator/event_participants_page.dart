@@ -131,6 +131,8 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
           'lead': leadEmail,
           'members': memberDetails,
           'createdAt': data['createdAt'],
+          // include payment screenshot URL if present in the Teams document
+          'payment_ss': data.containsKey('payment_ss') ? data['payment_ss'] : '',
         });
       }
 
