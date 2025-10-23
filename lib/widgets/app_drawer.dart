@@ -96,12 +96,12 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
+      // shape: const RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.only(
+      //     topRight: Radius.circular(20),
+      //     bottomRight: Radius.circular(20),
+      //   ),
+      // ),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -125,6 +125,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   // fit: BoxFit.contain, // Optional: how the SVG should fit
                   colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn), // Optional: apply a color filter
                 ),
+                // Image.asset("assets/instruo-app-splashscreen.gif", height: 100),
                 // const SizedBox(height: 12),
                 Text(
                   "INSTRUO'14",

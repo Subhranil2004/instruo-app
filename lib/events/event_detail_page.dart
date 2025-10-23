@@ -279,7 +279,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       final eventId = widget.event.id;
                       final eventCategory = widget.event.category.toLowerCase();
                       const gformEvents = ['gen1', 'gen3', 'tech7'];
-                      const separateformEvents = ['tech8', 'game1', 'game5'];
+                      const separateformEvents = ['tech8', 'game1', 'game4'];
+                      const physicalRegnEvents = ['gen12', 'game5'];
+
                       if (eventCategory == 'robotics' || gformEvents.contains(eventId)) {
                         displayMessageToUser('Register through Google Form', context, isError: false, durationSeconds: 3);
                         launchDialer(widget.event.gform, context, isUrl: true);
@@ -295,11 +297,16 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           case 'game1':
                             Navigator.push(context, MaterialPageRoute(builder: (context) => FifaRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
                         return;
-                          case 'game5':
+                          case 'game4':
                             Navigator.push(context, MaterialPageRoute(builder: (context) => KingsConRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
                         return;
                         }
 
+                      }
+
+                      if (physicalRegnEvents.contains(eventId)) {
+                        displayMessageToUser('Registration for this event will be done physically at the Lords Ground', context, isError: false, durationSeconds: 3);
+                        return;
                       }
 
                       Navigator.push(context, MaterialPageRoute(builder: (context) => EventRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
