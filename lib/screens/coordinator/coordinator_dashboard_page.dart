@@ -154,7 +154,7 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "COORDINATOR DASHBOARD",
+        title: "DASHBOARD",
         showBackButton: true,
         onBackPressed: () {
           Navigator.pushReplacementNamed(context, '/home'); // Navigate to the home route
@@ -233,115 +233,89 @@ class _CoordinatorDashboardPageState extends State<CoordinatorDashboardPage> {
       ),
     );
   }
-
-  Widget _buildEventTile(Event event) {
-    return Card(
-      elevation: 3,
+Widget _buildEventTile(Event event) {
+  return Card(
+    elevation: 3,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventParticipantsPage(event: event),
-            ),
-          );
-        },
-        // Make the left content flexible so long event names ellipsize instead of overflowing
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                event.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventParticipantsPage(event: event),
+          ),
+        );
+      },
+      title: Row(
+        // Keep the original Row for the title, but remove the chip from here
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              event.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
+          ),
+        ],
+      ),
+      // Use the subtitle for the category chip
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 6),
+          child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             _buildInfoChip(Icons.category, event.category.toUpperCase()),
           ],
         ),
-        // subtitle: Padding(
-        //   padding: const EdgeInsets.only(top: 6),
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       // Text(
-        //       //   event.description,
-        //       //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        //       //         color: AppTheme.textSecondary,
-        //       //       ),
-        //       //   maxLines: 2,
-        //       //   overflow: TextOverflow.ellipsis,
-        //       // ),
-        //       // const SizedBox(height: 8),
-        //       // Wrap(
-        //       //   spacing: 8,
-        //       //   runSpacing: 8,
-        //       //   children: [
-        //       //     _buildInfoChip(Icons.category, event.category.toUpperCase()),
-        //       //     _buildInfoChip(
-        //       //       Icons.group,
-        //       //       "${event.minTeamSize}-${event.maxTeamSize} members",
-        //       //     ),
-        //       //     _buildInfoChip(
-        //       //       Icons.currency_rupee,
-        //       //       "₹${event.fee}",
-        //       //     ),
-        //       //   ],
-        //       // ),
-        //     ],
-        //   ),
-        // ),
-        // Constrain trailing width so it cannot force the title row to overflow
-        trailing: IntrinsicWidth(
-          child: FutureBuilder<int>(
-            future: _getEventTeamsCount(event.id),
-            builder: (context, snapshot) {
-              final teamsCount = snapshot.data ?? 0;
-              return IntrinsicHeight(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    VerticalDivider(
-                      color: Colors.grey.shade300,
-                      thickness: 1,
-                      width: 24,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.groups, color: AppTheme.secondaryPurple, size: 20),
-                        const SizedBox(height: 4),
-                        Text(
-                          "$teamsCount team${teamsCount != 1 ? 's' : ''}",
-                          style: TextStyle(
-                            color: AppTheme.secondaryPurple,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
+      ),
+      trailing: IntrinsicWidth(
+        child: FutureBuilder<int>(
+          future: _getEventTeamsCount(event.id),
+          builder: (context, snapshot) {
+            final teamsCount = snapshot.data ?? 0;
+            return IntrinsicHeight(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  VerticalDivider(
+                    color: Colors.grey.shade300,
+                    thickness: 1,
+                    width: 24,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.groups, color: AppTheme.secondaryPurple, size: 20),
+                      const SizedBox(height: 4),
+                      Text(
+                        "$teamsCount team${teamsCount != 1 ? 's' : ''}",
+                        style: TextStyle(
+                          color: AppTheme.secondaryPurple,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildInfoChip(IconData icon, String text) {
     return Container(

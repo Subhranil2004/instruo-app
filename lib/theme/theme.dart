@@ -121,7 +121,7 @@ class AppTheme {
       ),
       titleMedium: GoogleFonts.poppins(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
+        // fontWeight: FontWeight.normal,
         color: textPrimary,
       ),
       bodyMedium: GoogleFonts.poppins(
@@ -226,7 +226,7 @@ class AppTheme {
       ),
       titleMedium: GoogleFonts.poppins(
         fontSize: 18,
-        fontWeight: FontWeight.w500,
+        // fontWeight: FontWeight.normal,
         color: textPrimaryDark,
       ),
       bodyMedium: GoogleFonts.poppins(

@@ -213,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 // Icon(Icons.person, size: 100, color: Theme.of(context).colorScheme.inversePrimary),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 // appname
                 const Text('I N S T R U O', style: TextStyle(fontSize: 20)),
                 const SizedBox(height: 40),

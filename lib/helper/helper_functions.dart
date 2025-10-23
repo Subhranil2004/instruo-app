@@ -4,6 +4,47 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../auth/auth.dart';
 import '../screens/profile_page.dart';
 
+// helper_functions.dart
+// lib/helper/helper_functions.dart
+import 'package:url_launcher/url_launcher.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+Future<void> launchDialer(String input, BuildContext context, {bool isUrl = false}) async {
+  if (isUrl) {
+    // Open as URL
+    final Uri uri = Uri.parse(input);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not open the link.")),
+      );
+    }
+    return;
+  }
+
+  // Open as phone number
+  final status = await Permission.phone.request();
+  if (status.isGranted) {
+    final Uri uri = Uri.parse("tel:$input");
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not launch dialer.")),
+      );
+    }
+  } else if (status.isDenied) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Phone permission denied.")),
+    );
+  } else if (status.isPermanentlyDenied) {
+    openAppSettings();
+  }
+}
+
+
+
 // Function to display a message to the user
 void displayMessageToUser(String message, BuildContext context, {bool isError = true, int durationSeconds = 2}) {
   ScaffoldMessenger.of(context).showSnackBar(

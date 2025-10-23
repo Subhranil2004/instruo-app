@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/home_page.dart';
-import 'package:instruo_application/screens/direction_page.dart';
+import 'package:instruo_application/screens/map_page.dart';
 import 'package:instruo_application/screens/sponsor_page.dart';
 import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
@@ -119,7 +119,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 // ),
                 // Image.asset("assets/instruo-gif.gif", height: 80),
                 SvgPicture.asset(
-                  'assets/instruo-gif.svg',
+                  'assets/instruo-gif.min.svg',
                   width: 100, // Optional: specify width
                   height: 100, // Optional: specify height
                   // fit: BoxFit.contain, // Optional: how the SVG should fit
@@ -172,7 +172,7 @@ class _AppDrawerState extends State<AppDrawer> {
           _buildDrawerItem(
             context,
             icon: Icons.directions,
-            text: "Campus Direction",
+            text: "Campus Map",
             onTap: () => _onTapNavigate(
               context,
               '/direction',
@@ -215,6 +215,32 @@ class _AppDrawerState extends State<AppDrawer> {
               context,
               '/contact',
               (ctx) => ContactUsPage(),
+            ),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: ListTile(
+              leading: Icon(Icons.info_outline, color: AppTheme.primaryBlue),
+              // title: Text(
+              //   'Theme',
+              //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              // ),
+              subtitle: const Text(
+                'This app follows your device theme.',
+              ),
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (c) => AlertDialog(
+                    title: const Text('Theme'),
+                    content: const Text('This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.of(c).pop(), child: const Text('OK')),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
