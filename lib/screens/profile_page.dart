@@ -323,15 +323,35 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 const SizedBox(height: 15),
-                                SwitchListTile(
-                                  title: const Text("Are you from IIEST?"),
-                                  value: _isIIESTian,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _isIIESTian = val;
-                                    });
-                                  },
+                               Center(
+                                  child: Column(
+                                    children: [
+                                      const Text("Are you from IIEST?"),
+                                      const SizedBox(height: 4),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            _isIIESTian ? "Yes" : "No",
+                                            style: TextStyle(
+                                              color: _isIIESTian ? Colors.green : Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Switch(
+                                            value: _isIIESTian,
+                                            onChanged: (val) {
+                                              setState(() {
+                                                _isIIESTian = val;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
+
+
                                 (!_isIIESTian)
                                   ? Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
