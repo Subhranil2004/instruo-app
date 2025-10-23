@@ -12,8 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _pageController = PageController(viewportFraction: 0.8);
-  int _currentPage = 0;
   User? currentUser;
   Map<String, dynamic>? userData;
 
@@ -27,9 +25,7 @@ class _HomePageState extends State<HomePage> {
     currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       userData = await AppBarAuthHelper.loadUserData(currentUser);
-      if (mounted) {
-        setState(() {});
-      }
+      if (mounted) setState(() {});
     }
   }
 
@@ -51,142 +47,146 @@ class _HomePageState extends State<HomePage> {
         showBackButton: false,
       ),
       drawer: AppDrawer(),
-      body: Container(
-        color: theme.scaffoldBackgroundColor,
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            Column(
-              children: [
-                Image.asset("assets/fest_logo.png", height: 100),
-                const SizedBox(height: 20),
-                ShaderMask(
-                  shaderCallback: (bounds) =>
-                      AppTheme.primaryGradient.createShader(bounds),
-                  child: Text(
-                    "INSTRUO 2025",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 6,
-                          color: Colors.black26,
-                          offset: Offset(2, 2),
-                        ),
-                      ],
-                    ),
+      body: Column(
+        children: [
+          // 🟩 Fixed Header Section (like WhatsApp stories top bar)
+          const SizedBox(height: 30),
+          Column(
+            children: [
+              Image.asset("assets/fest_logo.png", height: 90),
+              const SizedBox(height: 16),
+              ShaderMask(
+                shaderCallback: (bounds) =>
+                    AppTheme.primaryGradient.createShader(bounds),
+                child: Text(
+                  "INSTRUO 2025",
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 6,
+                        color: Colors.black26,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: eventTypes.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final event = eventTypes[index];
-                  return AnimatedBuilder(
-                    animation: _pageController,
-                    builder: (context, child) {
-                      double value = 1.0;
-                      if (_pageController.position.haveDimensions) {
-                        value = _pageController.page! - index;
-                        value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-                      }
-                      return Center(
-                        child: SizedBox(
-                          height: Curves.easeOut.transform(value) * 320,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: GestureDetector(
-                      onTap: () {
-                        int initialIndex;
-                        switch (event["title"]) {
-                          case "Technical":
-                            initialIndex = 0;
-                            break;
-                          case "General":
-                            initialIndex = 1;
-                            break;
-                          case "Robotics":
-                            initialIndex = 2;
-                            break;
-                          case "Gaming":
-                            initialIndex = 3;
-                            break;
-                          default:
-                            return;
-                        }
+              ),
+            ],
+          ),
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventsContainer(initialIndex: initialIndex),
-                          ),
+          const SizedBox(height: 100),
+
+          // 🟦 Free-flowing horizontal scroll section
+          SizedBox(
+            height: 300,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double cardWidth = constraints.maxWidth * 0.9;
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: eventTypes.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemBuilder: (context, index) {
+                    final event = eventTypes[index];
+
+                    return AnimatedBuilder(
+                      animation: Scrollable.of(context)!.position,
+                      builder: (context, child) {
+                        // Get scroll offset and calculate dynamic scaling
+                        final scrollOffset =
+                            Scrollable.of(context)!.position.pixels;
+                        final itemOffset = index * (cardWidth + 16);
+                        final diff = (scrollOffset - itemOffset) / cardWidth;
+                        final scale = (1 - diff.abs() * 0.15).clamp(0.9, 1.0);
+
+                        return Transform.scale(
+                          scale: scale,
+                          alignment: Alignment.center,
+                          child: child,
                         );
                       },
-                      child: Card(
-                        elevation: theme.cardTheme.elevation,
-                        shape: theme.cardTheme.shape,
-                        clipBehavior: Clip.antiAlias,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Image.asset(
-                                event["image"]!,
-                                fit: BoxFit.cover,
-                              ),
+                      child: GestureDetector(
+                        onTap: () {
+                          int initialIndex = eventTypes.indexOf(event);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EventsContainer(initialIndex: initialIndex),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.black.withOpacity(0.6),
-                                    Colors.transparent
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
+                          );
+                        },
+                        child: Container(
+                          width: cardWidth,
+                          margin: const EdgeInsets.only(right: 16),
+                          child: Card(
+                            elevation: 6,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                // Event Image
+                                Image.asset(
+                                  event["image"]!,
+                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  event["title"]!,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: Colors.white,
-                                    shadows: const [
-                                      Shadow(
-                                        blurRadius: 4,
-                                        color: Colors.black54,
-                                        offset: Offset(1, 1),
-                                      ),
-                                    ],
+
+                                // Gradient overlay for readability
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.black.withOpacity(0.6),
+                                        Colors.transparent
+                                      ],
+                                      begin: Alignment.bottomCenter,
+                                      end: Alignment.topCenter,
+                                    ),
                                   ),
                                 ),
-                              ),
+
+                                // Event Title
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      event["title"]!,
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: const [
+                                          Shadow(
+                                            blurRadius: 4,
+                                            color: Colors.black54,
+                                            offset: Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              },
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 25),
+        ],
       ),
     );
   }

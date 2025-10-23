@@ -29,6 +29,192 @@ class ContactInfo {
 /// Core team contacts (hardcoded for now)
 final List<ContactInfo> coreTeamContacts = [
   ContactInfo(
+    name: "Abhijit Karmakar",
+    role: "Head",
+    phone: "8902958716",
+    section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Soumyajit Karmakar",
+    role: "Head",
+    phone: "8902947361",
+    section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Anish Mansuri",
+    role: "Executive",
+    phone: "8340243520",
+    section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Surya Pratap Singh",
+    role: "Executive",
+    phone: "9580809836",
+    section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Mohak Singh",
+    role: "Head",
+    phone: "9936298780",
+    section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Jigyasha Kumari",
+    role: "Executive",
+    phone: "8829808766",
+    section: "Volunteer",
+  ),
+  ContactInfo(
+    name: "Supriyo Barman",
+    role: "Executive",
+    phone: "8168670463",
+    section: "Volunteer",
+  ),
+  ContactInfo(
+    name: "Kushal Rana",
+    role: "Head",
+    phone: "9064511198",
+    section: "Volunteer",
+  ),
+  ContactInfo(
+    name: "Bhumika Verma",
+    role: "Head",
+    phone: "8104072505",
+    section: "Volunteer",
+  ),
+  ContactInfo(
+    name: "Subhoshri Pal",
+    role: "Executive",
+    phone: "9953403425",
+    section: "Travel and Logistics",
+  ),
+  ContactInfo(
+    name: "Umashankar",
+    role: "Head",
+    phone: "8052599806",
+    section: "Travel and Logistics",
+  ),
+  ContactInfo(
+    name: "Erikilla Ashish",
+    role: "Executive",
+    phone: "6305852159",
+    section: "Travel and Logistics",
+  ),
+  ContactInfo(
+    name: "Sanskriti Ray",
+    role: "Head",
+    phone: "9641820932",
+    section: "Travel and Logistics",
+  ),
+  ContactInfo(
+    name: "Dipam Nayek",
+    role: "Executive",
+    phone: "9382028434",
+    section: "Travel and Logistics",
+  ),
+  ContactInfo(
+    name: "Shlok Vyas",
+    role: "Executive",
+    phone: "7779017229",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Archit Ranjan",
+    role: "Head",
+    phone: "6375448809",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Anjali Kumari",
+    role: "Executive",
+    phone: "9508297223",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Shivansh Mahobiya",
+    role: "Head",
+    phone: "8115592004",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Gourav Devpura",
+    role: "Executive",
+    phone: "7877917012",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Adesh Pal",
+    role: "Executive",
+    phone: "7355285362",
+    section: "Volunteer",
+  ),
+  ContactInfo(
+    name: "Sai Prasad",
+    role: "Head",
+    phone: "9989506676",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Aditya Raj Verma",
+    role: "Executive",
+    phone: "8210240857",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Nivedita Singh",
+    role: "Head",
+    phone: "6287099021",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Raj Bharti",
+    role: "Executive",
+    phone: "9341562082",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Sagnik Ganguly",
+    role: "Executive",
+    phone: "9873672463",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Shubh Ashutosh",
+    role: "Head",
+    phone: "7295946762",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Madhire Kalyan Sathwik",
+    role: "Head",
+    phone: "7396420410",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Ankit Kumar",
+    role: "Executive",
+    phone: "9508347529",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Naman Kumar Thakur",
+    role: "Head",
+    phone: "9258300407",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Saptarshi Chatterjee",
+    role: "Head",
+    phone: "8240974635",
+    section: "Publicity",
+  ),
+  ContactInfo(
+    name: "Nirupama Thakur",
+    role: "Executive",
+    phone: "7873803258",
+    section: "Publicity",
+  ),
+  ContactInfo(
     name: "Ayush Tejaswi",
     role: "Main Coordinator",
     phone: "8368033554",
@@ -46,20 +232,6 @@ final List<ContactInfo> coreTeamContacts = [
     phone: "6291290730",
     section: "Main Coordinator"
   ),
-  //
-  ContactInfo(
-    name: "Harshit Kumar",
-    role: "Head",
-    phone: "8809932888",
-    section: "App Development"
-  ),
-  ContactInfo(
-    name: "Subhranil Nandy",
-    role: "Head",
-    phone: "8809932888",
-    section: "App Development"
-  ),
-  //
   ContactInfo(
     name: "Pranjal Diwakar",
     role: "Head",
@@ -68,35 +240,110 @@ final List<ContactInfo> coreTeamContacts = [
   ),
   ContactInfo(
     name: "Sohom Chakraborty",
-    role: "Head",
+    role: "Executive",
     phone: "9331809512",
     section: "Joint Coordinator"
   ),
-  //
   ContactInfo(
     name: "Arman Choudhary",
     role: "Head",
     phone: "9667251975",
-    section: "Finance"
+    section: "Finance",
   ),
   ContactInfo(
-    name: "Saurav Kumar",
+    name: "Anurag Chaurasia",
     role: "Head",
-    phone: "",
-    section: "Finance"
+    phone: "9473567611",
+    section:  "Robodarshan",
   ),
   ContactInfo(
-    name: "Shreyansh Srivastva",
-    role: "Head",
-    phone: "",
-    section: "Finance"
-  ),
-  ContactInfo(
-    name: "Ayush Ranjan",
+    name: "Rohan Vikas Kudtudkar",
     role: "Executive",
-    phone: "",
-    section: "Finance"
+    phone: "9321234034",
+    section: "Travel and Logistics",
   ),
-  //
-
+  ContactInfo(
+    name: "Sangeet Gunwant Dhabare",
+    role: "Head",
+    phone: "9604671569",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Vipin Kumar Chaudhary",
+    role: "Executive",
+    phone: "6387336215",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Manmeet Kaur",
+    role: "Head",
+    phone: "9729001088",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Mohit Yadav",
+    role: "Executive",
+    phone: "7973176810",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Shubham Verma",
+    role: "Executive",
+    phone: "9983173519",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Ankita Balu Sapkal",
+    role: "Executive",
+    phone: "9699192032",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Yaswanth Pedapudi",
+    role: "Head",
+    phone: "7095788562",
+    section: "Events",
+  ),
+  ContactInfo(
+    name: "Dubakula Nithin Kumar",
+    role: "Executive",
+    phone: "6301456408",
+    section: "Design and Content",
+  ),
+  ContactInfo(
+    name: "Debaditya Nath",
+    role: "Executive",
+    phone: "7980374715",
+    section: "Design and Content",
+  ),
+  ContactInfo(
+    name: "Shinjini Roy",
+    role: "Head",
+    phone: "7979940954",
+    section: "Design and Content",
+  ),
+  ContactInfo(
+    name: "Subhranil Nandy",
+    role: "Head",
+    phone: "9123771737",
+    section: "App Development",
+  ),
+  ContactInfo(
+    name: "Harshit Kumar",
+    role: "Head",
+    phone: "8809932888",
+    section: "App Development",
+  ),
+  ContactInfo(
+    name: "Pranjal Batesar",
+    role: "Head",
+    phone: "9784628312",
+    section: "Sponsorship",
+  ),
+  ContactInfo(
+    name: "Achintya Sandilya",
+    role: "Head",
+    phone: "6299246335",
+    section: "Volunteer",
+  ),
 ];
