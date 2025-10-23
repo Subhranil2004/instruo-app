@@ -776,23 +776,37 @@ class _KingsConRegisterPageState extends State<KingsConRegisterPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    "Upload Payment Screenshot:",
-                                    style: TextStyle(fontSize: 16),
+                                  // Wrap text in Expanded so it can wrap to next line if needed
+                                  Expanded(
+                                    child: Text(
+                                      "Upload Payment Screenshot:",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                   ),
-                                  IconButton(
-                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
-                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
-                                        : () => _pickPaymentImage(ImageSource.gallery),
-                                    icon: const Icon(Icons.upload_file, color: AppTheme.primaryBlue, size: 24.0),
-                                  ),
-                                  const Text('or'),
-                                  IconButton(
-                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
-                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
-                                        : () => _pickPaymentImage(ImageSource.camera),
-                                    icon: Icon(Icons.camera_alt_outlined, color: AppTheme.primaryBlue, size: 24.0),
+                                  const SizedBox(width: 8),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                            ? () => displayMessageToUser(
+                                                "Please remove the existing payment screenshot before uploading a new one.",
+                                                context)
+                                            : () => _pickPaymentImage(ImageSource.gallery),
+                                        icon: const Icon(Icons.upload_file, color: AppTheme.primaryBlue, size: 24.0),
+                                      ),
+                                      const Text('or'),
+                                      IconButton(
+                                        onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                            ? () => displayMessageToUser(
+                                                "Please remove the existing payment screenshot before uploading a new one.",
+                                                context)
+                                            : () => _pickPaymentImage(ImageSource.camera),
+                                        icon: const Icon(Icons.camera_alt_outlined, color: AppTheme.primaryBlue, size: 24.0),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
