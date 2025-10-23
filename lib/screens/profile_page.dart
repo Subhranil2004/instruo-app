@@ -502,7 +502,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                         decoration: BoxDecoration(
                           gradient: AppTheme.primaryGradient,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
                               color: AppTheme.primaryBlue.withOpacity(0.25),

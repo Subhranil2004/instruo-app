@@ -11,19 +11,21 @@ import '../widgets/custom_app_bar.dart';
 import '../helper/helper_functions.dart';
 import '../theme/theme.dart';
 
-class EventRegisterPage extends StatefulWidget {
+class KingsConRegisterPage extends StatefulWidget {
   final Event event;
 
-  const EventRegisterPage({super.key, required this.event});
+  const KingsConRegisterPage({super.key, required this.event});
 
   @override
-  State<EventRegisterPage> createState() => _EventRegisterPageState();
+  State<KingsConRegisterPage> createState() => _KingsConRegisterPageState();
 }
 
-class _EventRegisterPageState extends State<EventRegisterPage> {
+class _KingsConRegisterPageState extends State<KingsConRegisterPage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
   final TextEditingController _teamNameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _fideIdController = TextEditingController();
+  final TextEditingController _fideRatingController = TextEditingController();
   
   List<Map<String, dynamic>> _allUsers = [];
   List<Map<String, dynamic>> _filteredUsers = [];
@@ -40,6 +42,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
 
   @override
   void initState() {
+    // print("KingsConRegisterPage initState called");
     super.initState();
     _checkUserAndProfile();
     _loadUsers();
@@ -49,6 +52,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   void dispose() {
     _teamNameController.dispose();
     _searchController.dispose();
+    _fideIdController.dispose();
+    _fideRatingController.dispose();
     super.dispose();
   }
 
@@ -231,9 +236,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       String? paymentDownloadUrl;
       // If a new payment ss is selected, upload it
       if (_selectedPaymentSSFile != null) {
-        final safeTeam = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
-        final safeEvent = widget.event.name.replaceAll(RegExp(r"[^A-Za-z0-9_]"), '_').replaceAll(' ', '_');
-        String filePath = 'payments/${safeEvent}_${safeTeam}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
 
         try {
@@ -262,6 +266,9 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
         'eventId': widget.event.id,
         'createdAt': FieldValue.serverTimestamp(),
         'tid': teamId,
+        // FIDE info collected during registration
+        'fide_id': int.tryParse(_fideIdController.text.trim()) ?? 0,
+        'fide_rating': int.tryParse(_fideRatingController.text.trim()) ?? 0,
       };
 
       // attach payment screenshot url if available
@@ -295,7 +302,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       //////////////////////////////////////////////
       
       displayMessageToUser(
-        "✅ Successfully registered for ${widget.event.name}!",
+        "Successfully registered for ${widget.event.name}!", 
         context, 
         isError: false
       );
@@ -339,6 +346,17 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       return;
     }
 
+    // Validate FIDE fields (required; enter 0 if not available)
+    if (_fideIdController.text.trim().isEmpty) {
+      displayMessageToUser("Please enter your FIDE ID (enter 0 if you don't have one).", context);
+      return;
+    }
+    if (_fideRatingController.text.trim().isEmpty) {
+      displayMessageToUser("Please enter your FIDE Rating (enter 0 if you don't have one).", context);
+      return;
+    }
+
+
     final totalMembers = _selectedMembers.length + 1; // +1 for current user
     if (totalMembers < widget.event.minTeamSize) {
       displayMessageToUser(
@@ -352,8 +370,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
     int nonIIESTIANCount = 0;
     if (!_currentUserIsIIESTian) nonIIESTIANCount += 1;
     nonIIESTIANCount += _selectedMembers.where((m) => (m['iiestian'] == null || m['iiestian'] == false)).length;
-    final totalAmount = nonIIESTIANCount >= 1 ? widget.event.fee : 0;
-
+    final totalAmount = nonIIESTIANCount == 1 ? widget.event.fee : widget.event.iiestFee;
 
     // If payment is required ensure a payment screenshot is provided BEFORE showing confirmation
     if (totalAmount > 0 && _selectedPaymentSSFile == null) {
@@ -464,7 +481,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                                   context,
                                   Icons.currency_rupee,
                                   "Registration Fee",
-                                  "₹${widget.event.fee} (non-IIESTians)",
+                                  "\n₹${widget.event.fee} (non-IIESTians)\n₹${widget.event.iiestFee} (IIESTians)",
                                 ),
                               ],
                             ),
@@ -484,6 +501,22 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                           labelText: "Team Name",
                           hintText: "Enter your team name",
                         ),
+                        const SizedBox(height: 12),
+                        // FIDE fields (required)
+                        MyTextField(
+                          controller: _fideIdController,
+                          labelText: "FIDE ID (If you do not have one, enter 0)",
+                          hintText: "Enter FIDE ID or 0",
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 12),
+                        MyTextField(
+                          controller: _fideRatingController,
+                          labelText: "FIDE Rating (If you do not have one, enter 0)",
+                          hintText: "Enter FIDE Rating or 0",
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 24),
                         const SizedBox(height: 24),
 
                         // Team Members Section (only if maxTeamSize > 1)

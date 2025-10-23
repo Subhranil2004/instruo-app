@@ -5,6 +5,10 @@ import '../../theme/theme.dart';
 import '../../events/events_model.dart';
 import '../../helper/helper_functions.dart';
 import 'event_update_page.dart';
+import 'package:excel/excel.dart' as xls;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class EventParticipantsPage extends StatefulWidget {
   final Event event;
@@ -131,6 +135,8 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
           'lead': leadEmail,
           'members': memberDetails,
           'createdAt': data['createdAt'],
+          // include payment screenshot URL if present in the Teams document
+          'payment_ss': data.containsKey('payment_ss') ? data['payment_ss'] : '',
         });
       }
 
@@ -158,6 +164,13 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
         showBackButton: true,
         showProfileButton: false,
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _exportToExcel,
+        backgroundColor: AppTheme.primaryBlue,
+        label: const Text('Export to xlsx'),
+        icon: const Icon(Icons.upload),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _teams.isEmpty
@@ -253,6 +266,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                       "${_teams.length} team${_teams.length != 1 ? 's' : ''}",
                       AppTheme.primaryBlue,
                     ),
+                    const SizedBox(width: 12),
                     //const SizedBox(width: 12),
                     
                   ],
@@ -292,6 +306,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
               },
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -371,6 +386,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
                 }
               },
             ),
+            const SizedBox(width: 12),
             const Icon(Icons.expand_more),
           ],
         ),
@@ -501,5 +517,142 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _exportToExcel() async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Step 1: get the event doc and its team ids
+      final eventDoc = await firestore.collection('Events').doc(widget.event.id).get();
+      if (!eventDoc.exists) {
+        displayMessageToUser('Event not found', context);
+        return;
+      }
+
+      final eventData = eventDoc.data();
+      final List<String> teamIds = List<String>.from((eventData?['teams'] ?? []).map((e) => e.toString()));
+
+      // Step 2: fetch team docs
+      final teamDocs = await Future.wait(teamIds.map((tid) => firestore.collection('Teams').doc(tid).get()));
+
+      // Collect unique user emails
+      final Set<String> userEmails = {};
+      final List<Map<String, dynamic>> teams = [];
+      for (final doc in teamDocs) {
+        if (!doc.exists) continue;
+        final data = doc.data();
+        if (data == null) continue;
+        final members = List<String>.from(((data['members'] ?? []) as List).map((e) => e.toString()));
+        final lead = data['lead']?.toString() ?? '';
+        userEmails.addAll(members);
+        if (lead.isNotEmpty) userEmails.add(lead);
+        teams.add({'id': doc.id, 'name': data['name'] ?? '', 'lead': lead, 'members': members});
+      }
+
+      // Step 3: fetch user docs
+      final Map<String, Map<String, dynamic>> users = {};
+      await Future.wait(userEmails.map((email) async {
+        final udoc = await firestore.collection('Users').doc(email).get();
+        final udata = udoc.data() ?? {};
+        // remove fields to exclude
+        udata.remove('coordinatingEvents');
+        udata.remove('eventsRegistered');
+        udata.remove('uid');
+        udata.remove('profileImageUrl');
+        users[email] = {'email': email, ...udata};
+      }));
+
+      // Build a deterministic, human-friendly header order
+      // Start with team metadata columns, then Email, then the rest of user fields (sorted)
+      final Set<String> excludedUserKeys = {'createdAt', 'isCoordinator'};
+
+      // Collect user-specific keys (excluding 'email' since we provide 'Email' column)
+      final Set<String> userKeys = {};
+      for (final u in users.values) {
+        for (final k in u.keys) {
+          if (k == 'email' || excludedUserKeys.contains(k)) continue;
+          userKeys.add(k);
+        }
+      }
+
+      final List<String> fieldsList = [];
+      fieldsList.addAll(['Team Name', 'Team Lead', 'Email']);
+      final remaining = userKeys.toList()..sort((a, b) => a.toString().compareTo(b.toString()));
+      fieldsList.addAll(remaining);
+
+      // Create Excel workbook and sheet
+  final excel = xls.Excel.createExcel();
+  final xls.Sheet sheet = excel["Sheet1"];
+
+      // Header row
+      for (int c = 0; c < fieldsList.length; c++) {
+        sheet.updateCell(xls.CellIndex.indexByColumnRow(columnIndex: c, rowIndex: 0), fieldsList[c]);
+      }
+
+      int row = 1;
+      // For every team, for every member, write a row
+      for (final team in teams) {
+  // final String teamId = team['id'];
+  final String teamName = team['name'] ?? '';
+        final List<String> members = List<String>.from(team['members'] ?? []);
+
+  // Determine the display name of the team lead (use name if available)
+  final String leadEmail = team['lead'] ?? '';
+  final String leadDisplayName = (users[leadEmail]?['name'] ?? leadEmail).toString();
+
+        for (int mi = 0; mi < members.length; mi++) {
+          final email = members[mi];
+          final user = users[email] ?? {'email': email};
+          final Map<String, dynamic> rowMap = {};
+
+          // Only put team metadata on the first row for this team
+          if (mi == 0) {
+            rowMap['Team Name'] = teamName;
+            rowMap['Team Lead'] = leadDisplayName;
+          } else {
+            rowMap['Team Name'] = '';
+            rowMap['Team Lead'] = '';
+          }
+
+          rowMap['Email'] = email;
+
+          // Fill remaining user-specific fields (use empty string when missing)
+          for (final f in remaining) {
+            rowMap[f] = user.containsKey(f) ? (user[f]?.toString() ?? '') : '';
+          }
+
+          for (int c = 0; c < fieldsList.length; c++) {
+            final value = rowMap[fieldsList[c]]?.toString() ?? '';
+            sheet.updateCell(xls.CellIndex.indexByColumnRow(columnIndex: c, rowIndex: row), value);
+          }
+          row++;
+        }
+
+        // Add one empty separator row between teams
+        row++;
+      }
+
+      // Save file to temp directory
+      final bytes = excel.encode();
+      if (bytes == null) {
+        displayMessageToUser('Failed to generate excel file', context);
+        return;
+      }
+
+      final dir = await getTemporaryDirectory();
+      final filePath = '${dir.path}/${widget.event.name}_participants_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+      final file = File(filePath);
+      await file.writeAsBytes(bytes, flush: true);
+
+      displayMessageToUser('✅ Excel file created successfully', context, isError: false, durationSeconds: 4);
+      // print('Excel created: $filePath');
+      Future.delayed(const Duration(seconds: 1), () {
+        OpenFile.open(filePath);
+      });
+    } catch (e) {
+      displayMessageToUser('Export failed: $e', context, durationSeconds: 4);
+      print('Export failed: $e');
+    }
   }
 }
