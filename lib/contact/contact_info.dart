@@ -234,19 +234,6 @@ final List<ContactInfo> coreTeamContacts = [
   ),
   //
   ContactInfo(
-    name: "Harshit Kumar",
-    role: "Head",
-    phone: "8809932888",
-    section: "App Development"
-  ),
-  ContactInfo(
-    name: "Subhranil Nandy",
-    role: "Head",
-    phone: "8809932888",
-    section: "App Development"
-  ),
-  //
-  ContactInfo(
     name: "Pranjal Diwakar",
     role: "Head",
     phone: "8355087594",

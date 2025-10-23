@@ -94,6 +94,11 @@ class AppBarAuthHelper {
                 if (context.mounted) {
                   displayMessageToUser('Successfully logged out', context, isError: false);
                   onStateChange?.call(); // Notify parent to refresh state
+                  // Navigate to AuthPage (login) and clear navigation stack so user cannot go back
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const AuthPage()),
+                    (route) => false,
+                  );
                 }
               } catch (e) {
                 if (context.mounted) {
