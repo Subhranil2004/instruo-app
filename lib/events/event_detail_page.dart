@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instruo_application/events/fifa_register_page.dart';
+import 'package:instruo_application/events/kings_con_register_page.dart';
+import 'package:instruo_application/events/ode_to_code_register_page.dart';
 import 'package:instruo_application/helper/helper_functions.dart';
 import 'events_model.dart';
 import "../theme/theme.dart";
@@ -95,23 +98,23 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Description
-                        Text(
+                        // Description (copyable)
+                        SelectableText(
                           widget.event.description,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 30),
 
                         // Rules Button
-                        if (widget.event.rules != null)
+                        if (widget.event.rules.isNotEmpty)
                         Center(
                           child: Material(
                             elevation: 4,
                             borderRadius: BorderRadius.circular(12),
                             color: Colors.transparent,
-                            child: InkWell(
+                              child: InkWell(
                               onTap: () {
-                                launchDialer(widget.event.rules!, context, isUrl: true);
+                                launchDialer(widget.event.rules, context, isUrl: true);
                               },
                               borderRadius: BorderRadius.circular(12),
                               child: Container(
@@ -142,7 +145,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           ),
                         ),
 
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 20),
 
                         Text(
                           "Prize Pool:",
@@ -175,10 +178,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           ),
 
 
-                        // Coordinator section
-                        // Coordinator section
+                        const SizedBox(height: 20),
                         Text(
-                          "Event Coordinators:",
+                          "Event Coordinator(s):",
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -277,9 +279,27 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       final eventId = widget.event.id;
                       final eventCategory = widget.event.category.toLowerCase();
                       const gformEvents = ['gen1', 'gen3', 'tech7'];
+                      const separateformEvents = ['tech8', 'game1', 'game5'];
                       if (eventCategory == 'robotics' || gformEvents.contains(eventId)) {
                         displayMessageToUser('Register through Google Form', context, isError: false, durationSeconds: 3);
+                        launchDialer(widget.event.gform, context, isUrl: true);
                         return;
+                      }
+
+                      if(separateformEvents.contains(eventId)) {
+
+                        switch(eventId) {
+                          case 'tech8':
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => OdeToCodeRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
+                        return;
+                          case 'game1':
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FifaRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
+                        return;
+                          case 'game5':
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => KingsConRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());
+                        return;
+                        }
+
                       }
 
                       Navigator.push(context, MaterialPageRoute(builder: (context) => EventRegisterPage(event: widget.event))).then((_) => _checkRegistrationStatus());

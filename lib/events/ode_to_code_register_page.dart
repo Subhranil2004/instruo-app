@@ -11,18 +11,19 @@ import '../widgets/custom_app_bar.dart';
 import '../helper/helper_functions.dart';
 import '../theme/theme.dart';
 
-class EventRegisterPage extends StatefulWidget {
+class OdeToCodeRegisterPage extends StatefulWidget {
   final Event event;
 
-  const EventRegisterPage({super.key, required this.event});
+  const OdeToCodeRegisterPage({super.key, required this.event});
 
   @override
-  State<EventRegisterPage> createState() => _EventRegisterPageState();
+  State<OdeToCodeRegisterPage> createState() => _OdeToCodeRegisterPageState();
 }
 
-class _EventRegisterPageState extends State<EventRegisterPage> {
+class _OdeToCodeRegisterPageState extends State<OdeToCodeRegisterPage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
   final TextEditingController _teamNameController = TextEditingController();
+  final TextEditingController _codeforcesIdController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   
   List<Map<String, dynamic>> _allUsers = [];
@@ -37,9 +38,12 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   bool _isLoadingUsers = true;
   bool _showSearch = false;
   bool _isRegistering = false;
+  // Venue participation: null = not selected yet, true = yes, false = no
+  bool? _participatingOnVenue;
 
   @override
   void initState() {
+    // print("Ode to Code Register Page Init");
     super.initState();
     _checkUserAndProfile();
     _loadUsers();
@@ -48,6 +52,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
   @override
   void dispose() {
     _teamNameController.dispose();
+    _codeforcesIdController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -231,9 +236,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       String? paymentDownloadUrl;
       // If a new payment ss is selected, upload it
       if (_selectedPaymentSSFile != null) {
-        final safeTeam = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
-        final safeEvent = widget.event.name.replaceAll(RegExp(r"[^A-Za-z0-9_]"), '_').replaceAll(' ', '_');
-        String filePath = 'payments/${safeEvent}_${safeTeam}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
 
         try {
@@ -255,7 +259,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       // Create a new Team document with a generated ID and include tid in the document
       final teamRef = firestore.collection('Teams').doc(); // generated id
       final teamId = teamRef.id;
-      final teamData = {
+      final Map<String, dynamic> teamData = {
         'name': _teamNameController.text.trim(),
         'members': [currentUser!.email!, ..._selectedMembers.map((m) => m['email']).toList()],
         'lead': currentUser!.email!,
@@ -267,6 +271,20 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       // attach payment screenshot url if available
       if (paymentDownloadUrl != null && paymentDownloadUrl.isNotEmpty) {
         teamData['payment_ss'] = paymentDownloadUrl;
+      }
+
+      // attach codeforces id if provided
+      final cfId = _codeforcesIdController.text.trim();
+      if (cfId.isNotEmpty) {
+        teamData['codeforces_id'] = cfId;
+      }
+
+      // attach venue participation choice (can be true/false/null)
+      if (_participatingOnVenue != null) {
+        teamData['participating_on_venue'] = _participatingOnVenue;
+      } else {
+        // If not selected, store explicit "unknown" or leave absent. We'll store null for clarity.
+        teamData['participating_on_venue'] = null;
       }
 
       batch.set(teamRef, teamData);
@@ -295,7 +313,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       //////////////////////////////////////////////
       
       displayMessageToUser(
-        "✅ Successfully registered for ${widget.event.name}!",
+        "Successfully registered for ${widget.event.name}!", 
         context, 
         isError: false
       );
@@ -339,6 +357,14 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       return;
     }
 
+    if (_codeforcesIdController.text.trim().isEmpty) {
+      displayMessageToUser(
+        "Please enter your Codeforces ID", 
+        context
+      );
+      return;
+    }
+
     final totalMembers = _selectedMembers.length + 1; // +1 for current user
     if (totalMembers < widget.event.minTeamSize) {
       displayMessageToUser(
@@ -353,7 +379,6 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
     if (!_currentUserIsIIESTian) nonIIESTIANCount += 1;
     nonIIESTIANCount += _selectedMembers.where((m) => (m['iiestian'] == null || m['iiestian'] == false)).length;
     final totalAmount = nonIIESTIANCount >= 1 ? widget.event.fee : 0;
-
 
     // If payment is required ensure a payment screenshot is provided BEFORE showing confirmation
     if (totalAmount > 0 && _selectedPaymentSSFile == null) {
@@ -484,7 +509,71 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                           labelText: "Team Name",
                           hintText: "Enter your team name",
                         ),
+                        const SizedBox(height: 12),
+                        // Codeforces ID input
+                        MyTextField(
+                          controller: _codeforcesIdController,
+                          labelText: "Codeforces ID",
+                          hintText: "Enter Codeforces handle",
+                        ),
                         const SizedBox(height: 24),
+                        // const SizedBox(height: 12),
+                        // Venue participation radio buttons
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Text(
+                            "Will you be participating on the venue?",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: RadioListTile<bool?>(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                // dense: true,
+                                visualDensity: const VisualDensity(horizontal: -4.0),
+                                value: true,
+                                groupValue: _participatingOnVenue,
+                                title: const Text('Yes'),
+                                onChanged: (val) {
+                                  setState(() { _participatingOnVenue = val; });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: RadioListTile<bool?>(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                // dense: true,
+                                visualDensity: const VisualDensity(horizontal: -4.0),
+                                value: false,
+                                groupValue: _participatingOnVenue,
+                                title: const Text('No'),
+                                onChanged: (val) {
+                                  setState(() { _participatingOnVenue = val; });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: RadioListTile<bool?>(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                // dense: true,
+                                visualDensity: const VisualDensity(horizontal: -4.0),
+                                value: null,
+                                groupValue: _participatingOnVenue,
+                                title: const Text('Not sure yet'),
+                                onChanged: (val) {
+                                  setState(() { _participatingOnVenue = val; });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+
 
                         // Team Members Section (only if maxTeamSize > 1)
                         if (widget.event.maxTeamSize > 1) ...[

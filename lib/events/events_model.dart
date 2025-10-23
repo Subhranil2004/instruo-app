@@ -31,9 +31,10 @@ class Event {
   final String rules;
   final int minTeamSize;
   final int maxTeamSize;
+  final int iiestFee;
   final int fee;
   final List<Coordinator> coordinators;
-  final Map<String, int> prizePool; // keys: "first", "second", "third"
+  final Map<String, int> prizePool; // keys: "first", "second", "third", ...
   final String gform; // Google Form link
 
   Event({
@@ -45,6 +46,7 @@ class Event {
     required this.rules,
     required this.minTeamSize,
     required this.maxTeamSize,
+    this.iiestFee = 0,
     this.fee = 0,
     required this.coordinators,
     required this.prizePool,
@@ -62,6 +64,7 @@ class Event {
       'minTeamSize': minTeamSize,
       'maxTeamSize': maxTeamSize,
       'fee': fee,
+      'iiestFee': iiestFee,
       'coordinators': coordinators.map((c) => c.toMap()).toList(),
       'prizePool': prizePool,
       'gform': gform, // add here
@@ -78,7 +81,8 @@ class Event {
       rules: map['rules'] ?? '',
       minTeamSize: map['minTeamSize'] ?? 1,
       maxTeamSize: map['maxTeamSize'] ?? 1,
-      fee: map['fee'] ?? 0,
+    iiestFee: map['iiestFee'] ?? 0,
+    fee: map['fee'] ?? 0,
       coordinators: (map['coordinators'] as List?)
               ?.map((c) => Coordinator.fromMap(c))
               .toList() ??

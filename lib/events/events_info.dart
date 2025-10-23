@@ -13,7 +13,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1NMOfWv29UCNxXkPIQwV1hkZuIPrr-4l5/edit?usp=sharing&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
       Coordinator(name: 'Ayush Dutta', phone: '8972851567'),
@@ -25,7 +25,7 @@ final List<Event> events = [
     category: "technical",
     name: "Hydroblast",
     image: "assets/fest.png",
-    description: "Hydroblast is an exhilarating water rocket competition where participants apply principles of science, engineering, and creativity to design and launch rockets powered by water and compressed air. The objective is to achieve maximum altitude, flight duration, or precise target landing. This event offers a thrilling, hands-on experience that encourages innovation while exploring key concepts of aerodynamics, fluid mechanics, and propulsion in a fun and competitive environment.",
+    description: "Hydroblast is an exhilarating water rocket competition where participants apply principles of science, engineering, and creativity to design and launch rockets powered by water and compressed air. The objective is to achieve maximum altitude, flight duration, or precise target landing. This event offers a thrilling, hands-on experience that encourages innovation while exploring key concepts of aerodynamics, fluid mechanics, and propulsion in a fun and competitive environment.\nNote: Pointy Rockets will be rejected.",
     rules: "https://docs.google.com/document/d/1AkJDJC55Zac6UYsRCsgW8VlES7xJmrxa/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
@@ -61,7 +61,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1u5qZLwOJ5WnLlH1wlcUza5-bGBPnGyDX/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 2,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -71,13 +71,13 @@ final List<Event> events = [
   Event(
     id: "tech5",
     category: "technical",
-    name: "Truss It",
+    name: "TRUSSt It",
     image: "assets/fest.png",
-    description: "Take on this hands-on engineering challenge and design sturdy bridges using popsicles and cardboard! Test your structural design skills, precision, creativity, and teamwork as you bring engineering concepts to life. Who will construct the strongest bridge and rise above the rest?",
+    description: "Take on this hands-on engineering challenge and design sturdy bridges using popsicles and cardboard! Test your structural design skills, precision, creativity, and teamwork as you bring engineering concepts to life. Who will construct the strongest bridge and rise above the rest?\nThe objective is to construct the strongest and most efficient bridge using only the materials we provide.  Your team's creation will be loaded until it reaches its breaking point to see whose design reigns supreme.",
     rules: "https://docs.google.com/document/d/1-7sTC5_kaKiY1rnkgxp-45p7gaiDwJD7/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 3,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -93,7 +93,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1wuGON1Hrsf4Ljk9WcPH2IjjuHI0Fqd7y/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -109,7 +109,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1mTKvo2ViCdoLXdmRxomJQqDATAhjPu5Z/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 3,
-    fee: 100,
+    fee: 200,
     gform: "https://forms.gle/jy498paNWitDbejw6",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -121,11 +121,11 @@ final List<Event> events = [
     category: "technical",
     name: "ODE to Code",
     image: "assets/fest.png",
-    description: "Join the ultimate coding battle that tests your skills, speed, and problem-solving prowess. Work with your team to tackle challenging problems, think fast, and code smarter. Sharpen your logic, stay calm under pressure, and let your code speak for you!",
+    description: "Join the ultimate coding battle that tests your skills, speed, and problem-solving prowess. Work with your team to tackle challenging problems, think fast, and code smarter. Sharpen your logic, stay calm under pressure, and let your code speak for you!\nJoin the IIEST Shibpur Group on Codeforces as Participant: \nhttps://codeforces.com/group/Bm2GlT8MYu\nNote: Time and date will be shared soon on the Codeforces Group (IIEST Shibpur) blog.",
     rules: "https://docs.google.com/document/d/1J4kJDK4gHtcHEI1ABlozsHu7St2iWOL6/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 3000, "third": 2000},
     coordinators: [
@@ -144,7 +144,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1eqE2f8LDadkLW6qnpgXSf6ubfAMY9Qah/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 3,
-    fee: 100,
+    fee: 200,
     gform: "https://docs.google.com/forms/d/e/1FAIpQLSck4EjnsbPvWJP4DWoAEzYvXE4LjAoNksQxl-zcPBqimXRnAw/viewform?usp=header",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -160,7 +160,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1HWf64s1DWQ9vgHOKRNHZ3L-G-ypK8gnx/view?usp=sharing",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -176,7 +176,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1QbOBHN0GS0pQZ-Kl8LUktvuf4bNXaV3J/edit?usp=sharing&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "https://docs.google.com/forms/d/e/1FAIpQLSflOigCjGahmxU-S93yXHdN6-tXSwWCwLZ5rFRJfUmOzL389Q/viewform?usp=header",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -192,7 +192,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1cJvH15il9kA6DN_hGcQI6KRD09IKK6tC/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 3,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2400, "third": 1600},
     coordinators: [
@@ -208,7 +208,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/14Cf6zvaQdKbCt1k_6m4PRjrlj4JHG-j0/view?usp=drive_link",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 5000, "second": 3000, "third": 2000},
     coordinators: [
@@ -225,7 +225,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/177W53fdttossRPcz0lnI2dZ7zfLHAVPu/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 3,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -241,7 +241,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1x5no3JG5GVs9EyE1J3edxOvEQDHxyiy3/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 2750, "second": 1500, "third": 750},
     coordinators: [
@@ -257,7 +257,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1P81tf9iqeDhyMaklBFFVz2cj-wsJXR2V/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 2,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 2500, "second": 1500, "third": 1000},
     coordinators: [
@@ -274,7 +274,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1gjRXHdtFh2N_5dU15wt-1_94nJHhr87X/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -290,7 +290,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1M1BULnxH11kWZfa5YexWIJVvAWBfp7Qv/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 2,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -306,7 +306,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1u__oqOBEC2FffxYCWCtC0g2FMRAsbzz6/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 3,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -322,7 +322,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1EtLg2-pzT_y9ohNJJEaT_vcXU29sYKuy/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 3000, "second": 2000, "third": 1000},
     coordinators: [
@@ -342,7 +342,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/13kruQPQsIUz1OeKboSeKwmBfcdwu50c0/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "https://forms.gle/zTcKx29xF11hs9wR9",
     prizePool: {"first": 15000},
     coordinators: [
@@ -358,7 +358,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1NKsK3jZZVczsOItYCaYoeP7h5dLb_0Kg/edit?usp=sharing&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 3,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "https://forms.gle/qPKLiRdoGAitN4sd8",
     prizePool: {"first": 10000},
     coordinators: [
@@ -374,7 +374,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1dTbqEzssbvC-ydBqNfVBi23hpHbUgh1q/edit?usp=sharing&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 300,
     prizePool: {"first": 10000},
     gform: "https://forms.gle/As4nn894VPZe3A427",
     coordinators: [
@@ -390,7 +390,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1junjcJ94YOgqYfjDBDKgMLQ--oJKOVD4/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "https://forms.gle/zTcKx29xF11hs9wR9",
     prizePool: {"first": 15000},
     coordinators: [
@@ -406,7 +406,8 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1AqDN99ZCPrr30H0fVGuQ9Dsm0V7qXlb8/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 4,
     maxTeamSize: 5,
-    fee: 100,
+    fee: 1000,
+    iiestFee: 150,
     gform: "https://forms.gle/Ser8R2L1ZYZfnN4X6",
     prizePool: {"first": 100000},
     coordinators: [
@@ -425,7 +426,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1-qzzjgtN2DQcWToSOwkbh_DZtyeDUF5D/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -441,7 +442,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/10XUSGMBRTRqZmFI0AtN5u2hVTMoDaljY/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 4,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 10000},
     coordinators: [
@@ -457,7 +458,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1nNNxDWDL2Cq7uy5ebne23UwYlIDes09P/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 5,
     maxTeamSize: 5,
-    fee: 100,
+    fee: 200,
     gform: "https://docs.google.com/forms/d/e/1FAIpQLScCN7wInImqeegsIw0WkgCDZBFyh99_cy7OfPXCWfAwkOe6NA/viewform?usp=header",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -468,15 +469,16 @@ final List<Event> events = [
   Event(
     id: "game5",
     category: "gaming",
-    name: "Kings's Conquest",
+    name: "King's Conquest",
     image: "assets/fest.png",
     description: "Are you ready for electrifying battle of wits where one wrong move can make or break you. We bring to you King’s Conquest a round-robin over the board rapid chess tournament that will allow to test your wits against the best. Only the strong shall prevail and the weak shall perish. So are you ready to crown yourself the next King of the 64 Squares?",
     rules: "https://docs.google.com/document/d/1R5Bl3HyRab9LvWtLVpMnppfXs7lzwARp/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    iiestFee: 30,
+    fee: 50,
     gform: "",
-    prizePool: {"first": 200, "second": 300, "third": 400, "fourth": 500, "fifth": 600, "sixth": 700, "seventh": 800, "eighth": 1000, "ninth": 1500, "tenth": 2000},
+  prizePool: {"first": 2000, "second": 1500, "third": 1000, "fourth": 800, "fifth": 700, "sixth": 600, "seventh": 500, "eighth": 400, "ninth": 300, "tenth": 200},
     coordinators: [
       Coordinator(name: 'Anjishnu Gupta', phone: '8768453342'),
     ],
@@ -490,7 +492,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/13glQjLBMniFD7ELwy8cu4nEo8TEcXYFk/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 10000},
     coordinators: [

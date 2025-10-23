@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../helper/helper_functions.dart';
 import '../../theme/theme.dart';
@@ -242,7 +243,7 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
     final bool? shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Team Registration'),
+        title: Text('Delete Team Registration', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
         content: Text(
           'Are you sure you want to delete the team "${_teamNameController.text.trim()}" from ${widget.event.name}?\n\nThis action cannot be undone.',
         ),
@@ -271,6 +272,18 @@ class _EventUpdatePageState extends State<EventUpdatePage> {
       final batch = firestore.batch();
       final teamId = widget.team['id'].toString();
       final eventId = widget.event.id;
+
+      // Attempt to delete payment screenshot from Firebase Storage (if present)
+      final paymentUrl = (widget.team['payment_ss'] ?? '').toString();
+      if (paymentUrl.isNotEmpty) {
+        try {
+          final ref = FirebaseStorage.instance.refFromURL(paymentUrl);
+          await ref.delete();
+        } catch (e) {
+          // Log and continue — storage deletion failures should not block DB cleanup
+          print('Warning: failed to delete payment_ss from storage: $e');
+        }
+      }
 
       // 1. Delete the team document from Teams collection
       final teamRef = firestore.collection('Teams').doc(teamId);

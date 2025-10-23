@@ -11,19 +11,21 @@ import '../widgets/custom_app_bar.dart';
 import '../helper/helper_functions.dart';
 import '../theme/theme.dart';
 
-class EventRegisterPage extends StatefulWidget {
+class FifaRegisterPage extends StatefulWidget {
   final Event event;
 
-  const EventRegisterPage({super.key, required this.event});
+  const FifaRegisterPage({super.key, required this.event});
 
   @override
-  State<EventRegisterPage> createState() => _EventRegisterPageState();
+  State<FifaRegisterPage> createState() => _FifaRegisterPageState();
 }
 
-class _EventRegisterPageState extends State<EventRegisterPage> {
+class _FifaRegisterPageState extends State<FifaRegisterPage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
   final TextEditingController _teamNameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
+  // Will you bring your own controller? true == yes, false == no, null == not selected
+  bool? _bringingOwnController;
   
   List<Map<String, dynamic>> _allUsers = [];
   List<Map<String, dynamic>> _filteredUsers = [];
@@ -231,9 +233,8 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       String? paymentDownloadUrl;
       // If a new payment ss is selected, upload it
       if (_selectedPaymentSSFile != null) {
-        final safeTeam = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
-        final safeEvent = widget.event.name.replaceAll(RegExp(r"[^A-Za-z0-9_]"), '_').replaceAll(' ', '_');
-        String filePath = 'payments/${safeEvent}_${safeTeam}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
 
         try {
@@ -255,7 +256,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       // Create a new Team document with a generated ID and include tid in the document
       final teamRef = firestore.collection('Teams').doc(); // generated id
       final teamId = teamRef.id;
-      final teamData = {
+      final Map<String, dynamic> teamData = {
         'name': _teamNameController.text.trim(),
         'members': [currentUser!.email!, ..._selectedMembers.map((m) => m['email']).toList()],
         'lead': currentUser!.email!,
@@ -267,6 +268,13 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       // attach payment screenshot url if available
       if (paymentDownloadUrl != null && paymentDownloadUrl.isNotEmpty) {
         teamData['payment_ss'] = paymentDownloadUrl;
+      }
+
+      // attach controller bringing choice
+      if (_bringingOwnController != null) {
+        teamData['bringing_own_controller'] = _bringingOwnController;
+      } else {
+        teamData['bringing_own_controller'] = null;
       }
 
       batch.set(teamRef, teamData);
@@ -295,7 +303,7 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
       //////////////////////////////////////////////
       
       displayMessageToUser(
-        "✅ Successfully registered for ${widget.event.name}!",
+        "Successfully registered for ${widget.event.name}!", 
         context, 
         isError: false
       );
@@ -485,6 +493,44 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                           hintText: "Enter your team name",
                         ),
                         const SizedBox(height: 24),
+                        // Will you bring your own controller? question
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Text(
+                            "Will you bring your own controller?",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<bool?>(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                // dense: true,
+                                visualDensity: const VisualDensity(horizontal: -4.0),
+                                value: true,
+                                groupValue: _bringingOwnController,
+                                title: const Text('Yes'),
+                                onChanged: (val) {
+                                  setState(() { _bringingOwnController = val; });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: RadioListTile<bool?>(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                // dense: true,
+                                visualDensity: const VisualDensity(horizontal: -4.0),
+                                value: false,
+                                groupValue: _bringingOwnController,
+                                title: const Text('No'),
+                                onChanged: (val) {
+                                  setState(() { _bringingOwnController = val; });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
 
                         // Team Members Section (only if maxTeamSize > 1)
                         if (widget.event.maxTeamSize > 1) ...[

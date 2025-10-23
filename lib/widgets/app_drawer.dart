@@ -119,7 +119,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 // ),
                 // Image.asset("assets/instruo-gif.gif", height: 80),
                 SvgPicture.asset(
-                  'assets/instruo-gif.svg',
+                  'assets/instruo-gif.min.svg',
                   width: 100, // Optional: specify width
                   height: 100, // Optional: specify height
                   // fit: BoxFit.contain, // Optional: how the SVG should fit

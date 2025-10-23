@@ -43,7 +43,9 @@ dependencies:
   cloud_firestore: ^6.0.2
   image_picker: ^1.2.0
   firebase_storage: ^13.0.3
-  jovial_svg: ^1.1.28
+  excel: ^2.1.0
+  path_provider: ^2.0.14
+  open_file: ^3.2.1
 
 dev_dependencies:
   flutter_test:
@@ -66,8 +68,8 @@ flutter:
 
   assets:
     # - assets/upi_qr.jpg
-    - assets/events/
     - assets/
+    - assets/events/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
