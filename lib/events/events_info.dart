@@ -460,7 +460,7 @@ final List<Event> events = [
     minTeamSize: 4,
     maxTeamSize: 4,
     fee: 200,
-    gform: "",
+    gform: "https://forms.gle/2qrtXN5gdLdAZWgn7",
     prizePool: {"first": 10000},
     coordinators: [
       Coordinator(name: 'Bikarm Kumar', phone: '6203294110'),
