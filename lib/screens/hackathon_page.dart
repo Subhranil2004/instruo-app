@@ -27,7 +27,7 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
 
     const rulesFormLink =
         "https://forms.gle/oNfjrjwB5RS2YQwY8"; // replace with real GForm
-    const websiteLink = "http://hacksprint.in/"; // replace with real website
+    const websiteLink = "https://hacksprint.in/register/iiest"; // replace with real website
 
     return Scaffold(
       drawer: AppDrawer(),
@@ -80,8 +80,7 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
                 child: SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 20.0),
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 150),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -90,7 +89,31 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
                           hackathonDescription,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        const SizedBox(height: 100),
+                        const SizedBox(height: 24),
+
+                        // Coordinators title
+                        Text(
+                          "Coordinators",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Hardcoded coordinators
+                        Column(
+                          children: const [
+                            CoordinatorCard(
+                              name: "Shreyansh",
+                              phone: "8478090242",
+                            ),
+                            CoordinatorCard(
+                              name: "Sujaan Sharma",
+                              phone: "9462480435",
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -130,6 +153,72 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Reusable Coordinator Card
+class CoordinatorCard extends StatelessWidget {
+  final String name;
+  final String phone;
+
+  const CoordinatorCard({super.key, required this.name, required this.phone});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryBlue.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppTheme.primaryBlue.withOpacity(0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+            radius: 24,
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: const TextStyle(
+                color: AppTheme.primaryBlue,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Coordinator",
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.phone, color: Colors.green),
+            onPressed: () => launchDialer(phone, context),
           ),
         ],
       ),
