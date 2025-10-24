@@ -10,7 +10,6 @@ import '../contact/contact_us.dart';
 import '../theme/theme.dart';
 import '../events/events_container.dart';
 import '../screens/coordinator/coordinator_dashboard_page.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instruo_application/widgets/theme_toggle_button.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -63,7 +62,6 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 
-  /// ✅ Fixed Navigation Logic
   void _onTapNavigate(
     BuildContext context,
     String routeName,

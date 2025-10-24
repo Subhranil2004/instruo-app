@@ -15,7 +15,7 @@ class Hackathon extends StatelessWidget {
 
 HackSprint Kolkata Edition — National Level Hackathon is happening at IIEST Shibpur, West Bengal on 1st & 2nd November 2025, powered by SR Technologies.
 
-🔥 Get an exclusive 50% discount on your registration — only for IIEST students!
+🔥 Fee (for iiestian): 750\nFee (for non-iiestian): 1000
 
 🎯 Workshops:
 • Artificial Intelligence / Machine Learning  
@@ -27,7 +27,9 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
 
     const rulesFormLink =
         "https://forms.gle/oNfjrjwB5RS2YQwY8"; // replace with real GForm
-    const websiteLink = "https://hacksprint.in/register/iiest"; // replace with real website
+    const websiteLink = "https://hacksprint.in";
+    const iiestianWebsiteLink =
+        "https://hacksprint.in/register/iiest"; // replace with real website
 
     return Scaffold(
       drawer: AppDrawer(),
@@ -80,7 +82,7 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
                 child: SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 150),
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 180),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -122,7 +124,7 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
             ],
           ),
 
-          // Floating buttons (Website + Form)
+          // Floating buttons (Website + IIESTian + Form)
           Positioned(
             bottom: 30,
             right: 20,
@@ -141,10 +143,22 @@ AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
                 ),
                 const SizedBox(height: 12),
 
+                // IIESTian Registration Button
+                FloatingActionButton.extended(
+                  heroTag: "iiestianBtn",
+                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.9),
+                  onPressed: () {
+                    launchDialer(iiestianWebsiteLink, context, isUrl: true);
+                  },
+                  icon: const Icon(Icons.school),
+                  label: const Text("IIESTian Registration"),
+                ),
+                const SizedBox(height: 12),
+
                 // Google Form Button
                 FloatingActionButton.extended(
                   heroTag: "formBtn",
-                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.9),
+                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.8),
                   onPressed: () {
                     launchDialer(rulesFormLink, context, isUrl: true);
                   },

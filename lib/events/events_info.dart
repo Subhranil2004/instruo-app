@@ -29,7 +29,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/1dD5mCnO7KcDUurDwGCzEBwUFMtodyEOO/edit?usp=sharing&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 100,
+    fee: 200,
     gform: "",
     prizePool: {"first": 2500, "second": 1500, "third": 500},
     coordinators: [
@@ -45,7 +45,7 @@ final List<Event> events = [
     rules: "https://docs.google.com/document/d/17Ba_8w8vDgyCi_nNDcy5kUV3rsj-dyEN/edit?usp=sharing&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 400,
+    fee: 200,
     gform: "",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
@@ -393,7 +393,7 @@ final List<Event> events = [
     rules: "https://drive.google.com/file/d/1l4UgbrbBZbyKk0GDYdOnx3kfuDqXH5Ll/view?usp=drive_link",
     minTeamSize: 2,
     maxTeamSize: 4,
-    fee: 300,
+    fee: 200,
     prizePool: {"first": 15000},
     gform: "https://forms.gle/As4nn894VPZe3A427",
     coordinators: [
