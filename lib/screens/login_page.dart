@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text.trim(),
       );
       if (context.mounted) {
-        displayMessageToUser('Password reset email sent! Check your inbox.', context, isError: false);
+        displayMessageToUser('Password reset email sent! Check your inbox (including spam folder)\nSender: from noreply@instruo-app-a7e9b.firebaseapp.com', context, isError: false, durationSeconds: 4);
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage;

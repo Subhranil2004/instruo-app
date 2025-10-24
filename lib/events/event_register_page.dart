@@ -112,6 +112,10 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
           .where((doc) => doc.id != currentUser?.email) // Exclude current user
           .map((doc) {
             final data = doc.data();
+            final eventsRegistered = (data['eventsRegistered'] is List)
+                ? List<String>.from(data['eventsRegistered'])
+                : <String>[];
+
             return {
               'email': doc.id,
               'name': data['name'] ?? '',
@@ -121,21 +125,26 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
               'year': data['year'] ?? '',
               'iiestian': data['iiestian'] ?? false,
               'ID_card': data['ID_card'],
+              'eventsRegistered': eventsRegistered,
             };
           })
           .where((user) {
-            final hasBasic = user['name']!.isNotEmpty &&
-                user['phone']!.isNotEmpty &&
-                user['department']!.isNotEmpty &&
-                user['collegeName']!.isNotEmpty &&
-                user['year']!.isNotEmpty;
+            // Exclude users who already registered for this event
+            final registered = (user['eventsRegistered'] as List).contains(widget.event.id);
+            if (registered) return false;
+
+            final hasBasic = (user['name'] ?? '').toString().isNotEmpty &&
+                (user['phone'] ?? '').toString().isNotEmpty &&
+                (user['department'] ?? '').toString().isNotEmpty &&
+                (user['collegeName'] ?? '').toString().isNotEmpty &&
+                (user['year'] ?? '').toString().isNotEmpty;
 
             // If iiestian is true, require ID_card to be present and non-empty
             final isIIESTian = (user.containsKey('iiestian') && user['iiestian'] == true);
             final hasIdCard = user.containsKey('ID_card') && (user['ID_card'] != null) && user['ID_card'].toString().isNotEmpty;
 
             return hasBasic && (isIIESTian ? hasIdCard : true);
-          }) // Only include users with complete profiles
+          }) // Only include users with complete profiles and not already registered
           .toList();
 
       setState(() {

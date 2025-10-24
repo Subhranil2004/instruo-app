@@ -218,7 +218,7 @@ class _AppDrawerState extends State<AppDrawer> {
               (ctx) => ContactUsPage(),
             ),
           ),
-          const Divider(),
+          // const Divider(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: ListTile(
@@ -244,6 +244,20 @@ class _AppDrawerState extends State<AppDrawer> {
               },
             ),
           ),
+
+          // // Use Expanded to push content to the bottom
+          // Expanded(
+          //   child: Align(
+          //     alignment: Alignment.bottomCenter,
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(16.0),
+          //       child: Text(
+          //         'Version 1.0.0', // Your content at the bottom
+          //         style: TextStyle(fontSize: 12, color: Colors.grey),
+          //       ),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );
