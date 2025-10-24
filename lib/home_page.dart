@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     onTap: () {
                       launchDialer("https://instruo.tech/", context,
                           isUrl: true);
@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                             Image.asset(
                               event["image"]!,
                               fit: BoxFit.cover,
-                              opacity: const AlwaysStoppedAnimation(0.6),
+                              opacity: const AlwaysStoppedAnimation(0.65),
                             ),
                            
                             Align(
