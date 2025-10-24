@@ -240,8 +240,9 @@ class _KingsConRegisterPageState extends State<KingsConRegisterPage> {
       String? paymentDownloadUrl;
       // If a new payment ss is selected, upload it
       if (_selectedPaymentSSFile != null) {
-        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
-        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final safeTeam = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        final safeEvent = widget.event.name.replaceAll(RegExp(r"[^A-Za-z0-9_]"), '_').replaceAll(' ', '_');
+        String filePath = 'payments/${safeEvent}_${safeTeam}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
 
         try {
@@ -786,6 +787,11 @@ class _KingsConRegisterPageState extends State<KingsConRegisterPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                const Text(
+                                  "Please make the payment here",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 12),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: Image.asset(

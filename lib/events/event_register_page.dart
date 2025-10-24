@@ -762,6 +762,11 @@ class _EventRegisterPageState extends State<EventRegisterPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                const Text(
+                                  "Please make the payment here (non-IIESTians)",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 12),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: Image.asset(

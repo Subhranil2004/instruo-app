@@ -536,18 +536,38 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
       // Step 2: fetch team docs
       final teamDocs = await Future.wait(teamIds.map((tid) => firestore.collection('Teams').doc(tid).get()));
 
-      // Collect unique user emails
+      // Collect unique user emails and preserve all team fields
       final Set<String> userEmails = {};
       final List<Map<String, dynamic>> teams = [];
+      final Set<String> teamFieldKeys = {};
+
       for (final doc in teamDocs) {
         if (!doc.exists) continue;
         final data = doc.data();
         if (data == null) continue;
+
         final members = List<String>.from(((data['members'] ?? []) as List).map((e) => e.toString()));
         final lead = data['lead']?.toString() ?? '';
         userEmails.addAll(members);
         if (lead.isNotEmpty) userEmails.add(lead);
-        teams.add({'id': doc.id, 'name': data['name'] ?? '', 'lead': lead, 'members': members});
+
+        // Collect team-level keys (excluding members array since it's represented separately)
+        final Map<String, dynamic> rawTeamFields = {};
+        data.forEach((k, v) {
+          if (k == 'members') return;
+          // keep every other field (including name, lead, payment_ss, createdAt, etc.)
+          rawTeamFields[k.toString()] = v;
+          teamFieldKeys.add(k.toString());
+        });
+
+        teams.add({
+          'id': doc.id,
+          'name': data['name'] ?? '',
+          'lead': lead,
+          'members': members,
+          // keep raw map for writing arbitrary team fields later
+          'raw': rawTeamFields,
+        });
       }
 
       // Step 3: fetch user docs
@@ -564,7 +584,7 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
       }));
 
       // Build a deterministic, human-friendly header order
-      // Start with team metadata columns, then Email, then the rest of user fields (sorted)
+      // Start with team metadata columns, then team-level fields (prefixed), then Email, then the rest of user fields (sorted)
       final Set<String> excludedUserKeys = {'createdAt', 'isCoordinator'};
 
       // Collect user-specific keys (excluding 'email' since we provide 'Email' column)
@@ -577,7 +597,21 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
       }
 
       final List<String> fieldsList = [];
-      fieldsList.addAll(['Team Name', 'Team Lead', 'Email']);
+      // Basic team metadata (no Team ID as requested)
+      fieldsList.addAll(['Team Name', 'Team Lead']);
+
+      // Add all discovered team fields (sorted) without prefix. Exclude some keys we don't want.
+      final List<String> teamFieldsSorted = teamFieldKeys.toList()..sort((a, b) => a.toString().compareTo(b.toString()));
+      final Set<String> teamKeysToExclude = {'name', 'lead', 'members', 'createdAt', 'eventId', 'tid'};
+      for (final k in teamFieldsSorted) {
+        // skip keys already represented above or explicitly excluded
+        if (teamKeysToExclude.contains(k)) continue;
+        // Add the raw key name as the column header (no 'Team: ' prefix)
+        fieldsList.add(k);
+      }
+
+      // Email and user-specific fields
+      fieldsList.add('Email');
       final remaining = userKeys.toList()..sort((a, b) => a.toString().compareTo(b.toString()));
       fieldsList.addAll(remaining);
 
@@ -591,47 +625,51 @@ class _EventParticipantsPageState extends State<EventParticipantsPage> {
       }
 
       int row = 1;
-      // For every team, for every member, write a row
-      for (final team in teams) {
-  // final String teamId = team['id'];
-  final String teamName = team['name'] ?? '';
-        final List<String> members = List<String>.from(team['members'] ?? []);
+          // For every team, for every member, write a row
+          for (final team in teams) {
+      final String teamName = team['name'] ?? '';
+            final List<String> members = List<String>.from(team['members'] ?? []);
 
-  // Determine the display name of the team lead (use name if available)
-  final String leadEmail = team['lead'] ?? '';
-  final String leadDisplayName = (users[leadEmail]?['name'] ?? leadEmail).toString();
+            // Determine the display name of the team lead (use name if available)
+            final String leadEmail = team['lead'] ?? '';
+            final String leadDisplayName = (users[leadEmail]?['name'] ?? leadEmail).toString();
 
-        for (int mi = 0; mi < members.length; mi++) {
-          final email = members[mi];
-          final user = users[email] ?? {'email': email};
-          final Map<String, dynamic> rowMap = {};
+            for (int mi = 0; mi < members.length; mi++) {
+              final email = members[mi];
+              final user = users[email] ?? {'email': email};
+              final Map<String, dynamic> rowMap = {};
 
-          // Only put team metadata on the first row for this team
-          if (mi == 0) {
-            rowMap['Team Name'] = teamName;
-            rowMap['Team Lead'] = leadDisplayName;
-          } else {
-            rowMap['Team Name'] = '';
-            rowMap['Team Lead'] = '';
+              // Always put team metadata on each member row (Team ID removed per request)
+              rowMap['Team Name'] = teamName;
+              rowMap['Team Lead'] = leadDisplayName;
+
+              // Add team-level arbitrary fields (use raw key names as headers, excluding unwanted keys)
+              final Map<String, dynamic> raw = (team['raw'] as Map<String, dynamic>?) ?? {};
+              final Set<String> teamKeysToExcludeLocal = {'name', 'lead', 'members', 'createdAt', 'eventId', 'tid'};
+              for (final k in teamFieldsSorted) {
+                if (teamKeysToExcludeLocal.contains(k)) continue;
+                final headerKey = k; // no prefix
+                final value = raw.containsKey(k) ? raw[k] : '';
+                rowMap[headerKey] = value?.toString() ?? '';
+              }
+
+              rowMap['Email'] = email;
+
+              // Fill remaining user-specific fields (use empty string when missing)
+              for (final f in remaining) {
+                rowMap[f] = user.containsKey(f) ? (user[f]?.toString() ?? '') : '';
+              }
+
+              for (int c = 0; c < fieldsList.length; c++) {
+                final value = rowMap[fieldsList[c]]?.toString() ?? '';
+                sheet.updateCell(xls.CellIndex.indexByColumnRow(columnIndex: c, rowIndex: row), value);
+              }
+              row++;
+            }
+
+            // Add one empty separator row between teams
+            row++;
           }
-
-          rowMap['Email'] = email;
-
-          // Fill remaining user-specific fields (use empty string when missing)
-          for (final f in remaining) {
-            rowMap[f] = user.containsKey(f) ? (user[f]?.toString() ?? '') : '';
-          }
-
-          for (int c = 0; c < fieldsList.length; c++) {
-            final value = rowMap[fieldsList[c]]?.toString() ?? '';
-            sheet.updateCell(xls.CellIndex.indexByColumnRow(columnIndex: c, rowIndex: row), value);
-          }
-          row++;
-        }
-
-        // Add one empty separator row between teams
-        row++;
-      }
 
       // Save file to temp directory
       final bytes = excel.encode();
