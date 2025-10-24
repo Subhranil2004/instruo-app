@@ -29,6 +29,12 @@ class ContactInfo {
 /// Core team contacts (hardcoded for now)
 final List<ContactInfo> coreTeamContacts = [
   ContactInfo(
+    name: "Achintya Sandilya",
+    role: "Head",
+    phone: "6299246335",
+    section: "Volunteer",
+  ),
+  ContactInfo(
     name: "Abhijit Karmakar",
     role: "Head",
     phone: "8902958716",
@@ -47,10 +53,28 @@ final List<ContactInfo> coreTeamContacts = [
     section: "Web Development",
   ),
   ContactInfo(
+    name: "Saurav Kumar",
+    role: "Head",
+    phone: "6201109581",
+    section: "Finance",
+  ),
+  ContactInfo(
+    name: "Shreyansh Srivastava",
+    role: "Head",
+    phone: "8478090242",
+    section: "Finance",
+  ),
+  ContactInfo(
     name: "Surya Pratap Singh",
     role: "Executive",
     phone: "9580809836",
     section: "Web Development",
+  ),
+  ContactInfo(
+    name: "Sujan Sharma",
+    role: "Head",
+    phone: "9462480435",
+    section: "Sponsorship",
   ),
   ContactInfo(
     name: "Mohak Singh",
@@ -161,18 +185,6 @@ final List<ContactInfo> coreTeamContacts = [
     section: "Publicity",
   ),
   ContactInfo(
-    name: "Nivedita Singh",
-    role: "Head",
-    phone: "6287099021",
-    section: "Publicity",
-  ),
-  ContactInfo(
-    name: "Raj Bharti",
-    role: "Executive",
-    phone: "9341562082",
-    section: "Publicity",
-  ),
-  ContactInfo(
     name: "Sagnik Ganguly",
     role: "Executive",
     phone: "9873672463",
@@ -191,16 +203,22 @@ final List<ContactInfo> coreTeamContacts = [
     section: "Publicity",
   ),
   ContactInfo(
-    name: "Ankit Kumar",
-    role: "Executive",
-    phone: "9508347529",
-    section: "Publicity",
-  ),
-  ContactInfo(
     name: "Naman Kumar Thakur",
     role: "Head",
     phone: "9258300407",
     section: "Publicity",
+  ),
+   ContactInfo(
+    name: "Sandeep Sankuru",
+    role: "Head",
+    phone: "9062906676",
+    section: "Design and Content",
+  ),
+  ContactInfo(
+    name: "Arka Mondal",
+    role: "Executive",
+    phone: "9474762287",
+    section: "Design and Content",
   ),
   ContactInfo(
     name: "Saptarshi Chatterjee",
@@ -220,28 +238,29 @@ final List<ContactInfo> coreTeamContacts = [
     phone: "8368033554",
     section: "Main Coordinator"
   ),
+   ContactInfo(
+    name: "Satish Gupta",
+    role: "Main Coordinator",
+    phone: "6291290730",
+    section: "Main Coordinator"
+  ),
   ContactInfo(
     name: "Aaratrika Sarkar ",
     role: "Main Coordinator",
     phone: "9481961973",
     section: "Main Coordinator"
   ),
-  ContactInfo(
-    name: "Satish Gupta",
-    role: "Main Coordinator",
-    phone: "6291290730",
-    section: "Main Coordinator"
-  ),
+ 
   //
   ContactInfo(
     name: "Pranjal Diwakar",
-    role: "Head",
+    role: "Joint Coordinator",
     phone: "8355087594",
     section: "Joint Coordinator"
   ),
   ContactInfo(
     name: "Sohom Chakraborty",
-    role: "Executive",
+    role: "Joint Coordinator",
     phone: "9331809512",
     section: "Joint Coordinator"
   ),
@@ -267,43 +286,49 @@ final List<ContactInfo> coreTeamContacts = [
     name: "Sangeet Gunwant Dhabare",
     role: "Head",
     phone: "9604671569",
-    section: "Events",
+    section: "Event",
+  ),
+  ContactInfo(
+    name: "Vikash Gopalak",
+    role: "Head",
+    phone: "9334563913",
+    section: "Event",
   ),
   ContactInfo(
     name: "Vipin Kumar Chaudhary",
     role: "Executive",
     phone: "6387336215",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Manmeet Kaur",
     role: "Head",
     phone: "9729001088",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Mohit Yadav",
     role: "Executive",
     phone: "7973176810",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Shubham Verma",
     role: "Executive",
     phone: "9983173519",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Ankita Balu Sapkal",
     role: "Executive",
     phone: "9699192032",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Yaswanth Pedapudi",
     role: "Head",
     phone: "7095788562",
-    section: "Events",
+    section: "Event",
   ),
   ContactInfo(
     name: "Dubakula Nithin Kumar",
@@ -340,11 +365,5 @@ final List<ContactInfo> coreTeamContacts = [
     role: "Head",
     phone: "9784628312",
     section: "Sponsorship",
-  ),
-  ContactInfo(
-    name: "Achintya Sandilya",
-    role: "Head",
-    phone: "6299246335",
-    section: "Volunteer",
   ),
 ];

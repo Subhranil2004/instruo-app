@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/screens/map_page.dart';
-import 'package:instruo_application/screens/sponsor_page.dart';
+import 'package:instruo_application/screens/hackathon_page.dart';
 import '../screens/timeline/timeline_page.dart';
 import '../contact/contact_us.dart';
 import '../theme/theme.dart';
@@ -60,24 +60,18 @@ class _AppDrawerState extends State<AppDrawer> {
       });
     }
   }
+
+  /// ✅ Fixed Navigation Logic
   void _onTapNavigate(
-    /*
-    Closes the drawer
-    Checks the current route name to prevent duplicate pushes
-    Builds a route with RouteSettings(name: routeName)
-    Navigates using:
-      pushAndRemoveUntil when resetStack is true (Home)
-      pushReplacement otherwise (Events, Workshops, Sponsors, Contact)
-    */
     BuildContext context,
     String routeName,
     WidgetBuilder builder, {
     bool resetStack = false,
   }) {
-    // Close the drawer first
+    // Close the drawer
     Navigator.pop(context);
 
-    // Avoid pushing if we're already on the destination
+    // Avoid pushing if already on that page
     final currentName = ModalRoute.of(context)?.settings.name;
     if (currentName == routeName) return;
 
@@ -87,21 +81,18 @@ class _AppDrawerState extends State<AppDrawer> {
     );
 
     if (resetStack) {
+      // For home — reset entire navigation stack
       Navigator.pushAndRemoveUntil(context, route, (Route<dynamic> r) => false);
     } else {
-      Navigator.pushReplacement(context, route);
+      // ✅ Use push instead of pushReplacement
+      // Keeps back stack intact so pressing back goes to previous screen
+      Navigator.push(context, route);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      // shape: const RoundedRectangleBorder(
-      //   borderRadius: BorderRadius.only(
-      //     topRight: Radius.circular(20),
-      //     bottomRight: Radius.circular(20),
-      //   ),
-      // ),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -112,32 +103,24 @@ class _AppDrawerState extends State<AppDrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // CircleAvatar(
-                //   radius: 36,
-                //   backgroundImage: const AssetImage("assets/fest_logo.png"),
-                //   backgroundColor: Colors.transparent,
-                // ),
-                // Image.asset("assets/instruo-gif.gif", height: 80),
                 SvgPicture.asset(
                   'assets/instruo-gif.min.svg',
-                  width: 100, // Optional: specify width
-                  height: 100, // Optional: specify height
-                  // fit: BoxFit.contain, // Optional: how the SVG should fit
-                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn), // Optional: apply a color filter
+                  width: 100,
+                  height: 100,
+                  colorFilter: const ColorFilter.mode(
+                      Colors.white, BlendMode.srcIn),
                 ),
-                // Image.asset("assets/instruo-app-splashscreen.gif", height: 100),
-                // const SizedBox(height: 12),
                 Text(
                   "INSTRUO'14",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white,
-                        // fontWeight: FontWeight.w500,
                       ),
                 ),
               ],
             ),
           ),
 
+          // ✅ Navigation Items
           _buildDrawerItem(
             context,
             icon: Icons.home,
@@ -169,7 +152,6 @@ class _AppDrawerState extends State<AppDrawer> {
               (ctx) => const TimelinePage(),
             ),
           ),
-
           _buildDrawerItem(
             context,
             icon: Icons.directions,
@@ -180,19 +162,17 @@ class _AppDrawerState extends State<AppDrawer> {
               (ctx) => DirectionsPage(),
             ),
           ),
-          
           _buildDrawerItem(
             context,
             icon: Icons.star,
-            text: "Sponsors",
+            text: "Hackathon",
             onTap: () => _onTapNavigate(
               context,
               '/sponsors',
-              (ctx) => SponsorsPage(),
+              (ctx) => Hackathon(),
             ),
           ),
 
-          // Coordinator Section (only visible to coordinators)
           if (_isCoordinator && !_isLoading) ...[
             const Divider(),
             _buildDrawerItem(
@@ -218,15 +198,13 @@ class _AppDrawerState extends State<AppDrawer> {
               (ctx) => ContactUsPage(),
             ),
           ),
-          // const Divider(),
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: ListTile(
-              leading: Icon(Icons.info_outline, color: AppTheme.primaryBlue),
-              // title: Text(
-              //   'Theme',
-              //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-              // ),
+              leading:
+                  Icon(Icons.info_outline, color: AppTheme.primaryBlue),
               subtitle: const Text(
                 'This app follows your device theme.',
               ),
@@ -235,29 +213,18 @@ class _AppDrawerState extends State<AppDrawer> {
                   context: context,
                   builder: (c) => AlertDialog(
                     title: const Text('Theme'),
-                    content: const Text('This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
+                    content: const Text(
+                        'This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
                     actions: [
-                      TextButton(onPressed: () => Navigator.of(c).pop(), child: const Text('OK')),
+                      TextButton(
+                          onPressed: () => Navigator.of(c).pop(),
+                          child: const Text('OK')),
                     ],
                   ),
                 );
               },
             ),
           ),
-
-          // // Use Expanded to push content to the bottom
-          // Expanded(
-          //   child: Align(
-          //     alignment: Alignment.bottomCenter,
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(16.0),
-          //       child: Text(
-          //         'Version 1.0.0', // Your content at the bottom
-          //         style: TextStyle(fontSize: 12, color: Colors.grey),
-          //       ),
-          //     ),
-          //   ),
-          // )
         ],
       ),
     );
