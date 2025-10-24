@@ -484,8 +484,8 @@ final List<Event> events = [
     gform: "https://docs.google.com/forms/d/e/1FAIpQLScCN7wInImqeegsIw0WkgCDZBFyh99_cy7OfPXCWfAwkOe6NA/viewform?usp=header",
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
-      Coordinator(name: 'Debjit Maity', phone: '8167025227'),
       Coordinator(name: 'Anshuman Dalai', phone: '8757599552'),
+      Coordinator(name: 'Debjit Maity', phone: '8167025227'),
     ],
   ),
  
