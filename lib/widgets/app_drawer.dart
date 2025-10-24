@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instruo_application/helper/helper_functions.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/screens/map_page.dart';
 import 'package:instruo_application/screens/hackathon_page.dart';
@@ -155,6 +156,16 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
                 _buildDrawerItem(
                   context,
+                  icon: Icons.computer,
+                  text: "Hackathon",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/sponsors',
+                    (ctx) => Hackathon(),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
                   icon: Icons.work,
                   text: "Timeline",
                   onTap: () => _onTapNavigate(
@@ -172,17 +183,18 @@ class _AppDrawerState extends State<AppDrawer> {
                     '/direction',
                     (ctx) => DirectionsPage(),
                   ),
-                ),
+                ),              
                 _buildDrawerItem(
                   context,
-                  icon: Icons.computer,
-                  text: "Hackathon",
-                  onTap: () => _onTapNavigate(
+                  icon: Icons.drive_file_move,
+                  text: "Combined Rulebook",
+                  onTap: () => launchDialer(
+                    "https://drive.google.com/file/d/12yksndaQCtu3fY74EWEwsj4o5LKrnX3J/view?usp=sharing",
                     context,
-                    '/sponsors',
-                    (ctx) => Hackathon(),
+                    isUrl: true,
                   ),
                 ),
+
 
                 if (_isCoordinator && !_isLoading) ...[
                   const Divider(),
