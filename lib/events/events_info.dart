@@ -269,7 +269,7 @@ final List<Event> events = [
     category: "general",
     name: "Mathemania",
     image: "assets/event_poster/gen8.png",
-    description: "Calculate. Visualize. Amaze. A quiz competition that tests both analytical and creative problem-solving skills! Round 1: Solve questions on pure mathematics, quantitative aptitude, and logical reasoning. Round 2: Recreate a given image using mathematical equations on Desmos, showcasing your mathematical creativity and visualization skills.Only the sharpest minds and most creative problem-solvers will rise to the challenge!",
+    description: "Calculate. Visualize. Amaze. A quiz competition that tests both analytical and creative problem-solving skills!\n\nRound 1: Solve questions on pure mathematics, quantitative aptitude, and logical reasoning.\n\nRound 2: Recreate a given image using mathematical equations on Desmos, showcasing your mathematical creativity and visualization skills.\n\nOnly the sharpest minds and most creative problem-solvers will rise to the challenge!",
     rules: "https://drive.google.com/file/d/1P81tf9iqeDhyMaklBFFVz2cj-wsJXR2V/view?usp=drive_link",
     minTeamSize: 1,
     maxTeamSize: 2,
