@@ -96,134 +96,149 @@ class _AppDrawerState extends State<AppDrawer> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          // Larger header to accommodate a bigger GIF/logo
+          Container(
+            height: 220, // increased height for larger GIF
+            width: double.infinity,
             decoration: const BoxDecoration(
               gradient: AppTheme.primaryGradient,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  'assets/instruo-gif.min.svg',
-                  width: 100,
-                  height: 100,
-                  colorFilter: const ColorFilter.mode(
-                      Colors.white, BlendMode.srcIn),
-                ),
-                Text(
-                  "INSTRUO'14",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                      ),
-                ),
-              ],
-            ),
-          ),
-
-          _buildDrawerItem(
-            context,
-            icon: Icons.home,
-            text: "Home",
-            onTap: () => _onTapNavigate(
-              context,
-              '/home',
-              (ctx) => HomePage(),
-              resetStack: true,
-            ),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.event,
-            text: "Events",
-            onTap: () => _onTapNavigate(
-              context,
-              '/events',
-              (ctx) => const EventsContainer(initialIndex: 0),
-            ),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.work,
-            text: "Timeline",
-            onTap: () => _onTapNavigate(
-              context,
-              '/timeline/day1',
-              (ctx) => const TimelinePage(),
-            ),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.directions,
-            text: "Campus Map",
-            onTap: () => _onTapNavigate(
-              context,
-              '/direction',
-              (ctx) => DirectionsPage(),
-            ),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.computer,
-            text: "Hackathon",
-            onTap: () => _onTapNavigate(
-              context,
-              '/sponsors',
-              (ctx) => Hackathon(),
-            ),
-          ),
-
-          if (_isCoordinator && !_isLoading) ...[
-            const Divider(),
-            _buildDrawerItem(
-              context,
-              icon: Icons.manage_accounts,
-              text: "Coordinator Dashboard",
-              onTap: () => _onTapNavigate(
-                context,
-                '/coordinator/events',
-                (ctx) => const CoordinatorDashboardPage(),
-              ),
-            ),
-          ],
-
-          const Divider(),
-          _buildDrawerItem(
-            context,
-            icon: Icons.contact_mail,
-            text: "Contact Us",
-            onTap: () => _onTapNavigate(
-              context,
-              '/contact',
-              (ctx) => ContactUsPage(),
-            ),
-          ),
-
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            child: ListTile(
-              leading:
-                  Icon(Icons.info_outline, color: AppTheme.primaryBlue),
-              subtitle: const Text(
-                'This app follows your device theme.',
-              ),
-              onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (c) => AlertDialog(
-                    title: const Text('Theme'),
-                    content: const Text(
-                        'This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
-                    actions: [
-                      TextButton(
-                          onPressed: () => Navigator.of(c).pop(),
-                          child: const Text('OK')),
-                    ],
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Use a larger image and preserve aspect ratio
+                  Image.asset(
+                    'assets/instruo-app-splashscreen.gif',
+                    // width: 220,
+                    height: 100,
+                    fit: BoxFit.contain,
                   ),
-                );
-              },
+                  const SizedBox(height: 8),
+                  Text(
+                    "INSTRUO'14",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                ],
+              ),
             ),
           ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              children: [
+                
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.home,
+                  text: "Home",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/home',
+                    (ctx) => HomePage(),
+                    resetStack: true,
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.event,
+                  text: "Events",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/events',
+                    (ctx) => const EventsContainer(initialIndex: 0),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.work,
+                  text: "Timeline",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/timeline/day1',
+                    (ctx) => const TimelinePage(),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.directions,
+                  text: "Campus Map",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/direction',
+                    (ctx) => DirectionsPage(),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.computer,
+                  text: "Hackathon",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/sponsors',
+                    (ctx) => Hackathon(),
+                  ),
+                ),
+
+                if (_isCoordinator && !_isLoading) ...[
+                  const Divider(),
+                  _buildDrawerItem(
+                    context,
+                    icon: Icons.manage_accounts,
+                    text: "Coordinator Dashboard",
+                    onTap: () => _onTapNavigate(
+                      context,
+                      '/coordinator/events',
+                      (ctx) => const CoordinatorDashboardPage(),
+                    ),
+                  ),
+                ],
+
+                const Divider(),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.contact_mail,
+                  text: "Contact Us",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/contact',
+                    (ctx) => ContactUsPage(),
+                  ),
+                ),
+
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  child: ListTile(
+                    leading:
+                        Icon(Icons.info_outline, color: AppTheme.primaryBlue),
+                    subtitle: const Text(
+                      'This app follows your device theme.',
+                    ),
+                    onTap: () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (c) => AlertDialog(
+                          title: const Text('Theme'),
+                          content: const Text(
+                              'This app follows your device theme. To switch between light and dark mode, change your device appearance in Settings.'),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.of(c).pop(),
+                                child: const Text('OK')),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ]
+            )
+          )
         ],
       ),
     );

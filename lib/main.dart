@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:instruo_application/home_page.dart';
 import 'package:instruo_application/firebase_options.dart';
 import 'package:instruo_application/screens/timeline/timeline_page.dart';
+import 'package:instruo_application/splash_screen.dart';
 import 'theme/theme.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       scaffoldMessengerKey: rootScaffoldMessengerKey,
-      home: HomePage(), // Start with Home page
+      home: SplashScreen(), // Start with Home page
       routes: {
         '/home': (context) => HomePage(), // Add this
         '/timeline': (context) => const TimelinePage(),
