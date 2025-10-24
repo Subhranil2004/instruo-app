@@ -140,82 +140,93 @@ class _AppDrawerState extends State<AppDrawer> {
                   child: Column(
                     children: [
                       _buildDrawerItem(
-                        context,
-                        icon: Icons.home,
-                        text: "Home",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/home',
-                          (ctx) => HomePage(),
-                          resetStack: true,
-                        ),
-                      ),
-                      _buildDrawerItem(
-                        context,
-                        icon: Icons.event,
-                        text: "Events",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/events',
-                          (ctx) => const EventsContainer(initialIndex: 0),
-                        ),
-                      ),
-                      _buildDrawerItem(
-                        context,
-                        icon: Icons.work,
-                        text: "Timeline",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/timeline/day1',
-                          (ctx) => const TimelinePage(),
-                        ),
-                      ),
-                      _buildDrawerItem(
-                        context,
-                        icon: Icons.directions,
-                        text: "Campus Map",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/direction',
-                          (ctx) => DirectionsPage(),
-                        ),
-                      ),
-                      _buildDrawerItem(
-                        context,
-                        icon: Icons.computer,
-                        text: "Hackathon",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/sponsors',
-                          (ctx) => Hackathon(),
-                        ),
-                      ),
+                  context,
+                  icon: Icons.home,
+                  text: "Home",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/home',
+                    (ctx) => HomePage(),
+                    resetStack: true,
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.event,
+                  text: "Events",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/events',
+                    (ctx) => const EventsContainer(initialIndex: 0),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.computer,
+                  text: "Hackathon",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/sponsors',
+                    (ctx) => Hackathon(),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.work,
+                  text: "Timeline",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/timeline/day1',
+                    (ctx) => const TimelinePage(),
+                  ),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.directions,
+                  text: "Campus Map",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/direction',
+                    (ctx) => DirectionsPage(),
+                  ),
+                ),              
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.drive_file_move,
+                  text: "Combined Rulebook",
+                  onTap: () => launchDialer(
+                    "https://drive.google.com/file/d/12yksndaQCtu3fY74EWEwsj4o5LKrnX3J/view?usp=sharing",
+                    context,
+                    isUrl: true,
+                  ),
+                ),
 
-                      if (_isCoordinator && !_isLoading) ...[
-                        const Divider(),
-                        _buildDrawerItem(
-                          context,
-                          icon: Icons.manage_accounts,
-                          text: "Coordinator Dashboard",
-                          onTap: () => _onTapNavigate(
-                            context,
-                            '/coordinator/events',
-                            (ctx) => const CoordinatorDashboardPage(),
-                          ),
-                        ),
-                      ],
 
-                      const Divider(),
-                      _buildDrawerItem(
-                        context,
-                        icon: Icons.contact_mail,
-                        text: "Contact Us",
-                        onTap: () => _onTapNavigate(
-                          context,
-                          '/contact',
-                          (ctx) => ContactUsPage(),
-                        ),
-                      ),
+                if (_isCoordinator && !_isLoading) ...[
+                  const Divider(),
+                  _buildDrawerItem(
+                    context,
+                    icon: Icons.manage_accounts,
+                    text: "Coordinator Dashboard",
+                    onTap: () => _onTapNavigate(
+                      context,
+                      '/coordinator/events',
+                      (ctx) => const CoordinatorDashboardPage(),
+                    ),
+                  ),
+                ],
+
+                const Divider(),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.contact_mail,
+                  text: "Contact Us",
+                  onTap: () => _onTapNavigate(
+                    context,
+                    '/contact',
+                    (ctx) => ContactUsPage(),
+                  ),
+                ),
 
                       // Info tile removed — theme toggle is available at the bottom of the drawer.
                     ],
