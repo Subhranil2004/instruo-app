@@ -42,7 +42,7 @@ final List<Event> events = [
     name: "Rise Above",
     image: "assets/event_poster/tech3.png",
     description: "RC Plane Competition is a technical event where participants design, build, and fly radio-controlled aircraft capable of carrying a payload. The aircraft must take off smoothly, demonstrate stable flight, and remain airborne for at least 30 seconds while carrying the load. This event tests creativity, engineering skills, and the practical application of aerodynamics.",
-    rules: "https://docs.google.com/document/d/1aKx0DHlXb5vVwz-R2v9807d1A4Gv-R0H/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
+    rules: "https://docs.google.com/document/d/17Ba_8w8vDgyCi_nNDcy5kUV3rsj-dyEN/edit?usp=sharing&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 2,
     maxTeamSize: 4,
     fee: 400,
@@ -122,7 +122,7 @@ final List<Event> events = [
     name: "ODE to Code",
     image: "assets/event_poster/tech8.png",
     description: "Join the ultimate coding battle that tests your skills, speed, and problem-solving prowess. Work with your team to tackle challenging problems, think fast, and code smarter. Sharpen your logic, stay calm under pressure, and let your code speak for you!\nJoin the IIEST Shibpur Group on Codeforces as Participant: \nhttps://codeforces.com/group/Bm2GlT8MYu\nNote: Time and date will be shared soon on the Codeforces Group (IIEST Shibpur) blog.",
-    rules: "https://docs.google.com/document/d/1J4kJDK4gHtcHEI1ABlozsHu7St2iWOL6/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
+    rules: "https://docs.google.com/document/d/1YRKTn-Jh_k-gpgDgiYniAiNJw1HFHNIs/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
     fee: 200,
@@ -359,7 +359,7 @@ final List<Event> events = [
     minTeamSize: 2,
     maxTeamSize: 4,
     fee: 200,
-    gform: "https://forms.gle/zTcKx29xF11hs9wR9",
+    gform: "https://docs.google.com/forms/d/e/1FAIpQLSeKnLIvnI60l35Buk98GAXCSnRMhDFjen_PQOajud6s4a7CEw/viewform",
     prizePool: {"first": 15000},
     coordinators: [
       Coordinator(name: 'Pratyush', phone: '8617780658'),
@@ -480,6 +480,7 @@ final List<Event> events = [
     prizePool: {"first": 4000, "second": 2500, "third": 1500},
     coordinators: [
       Coordinator(name: 'Debjit Maity', phone: '8167025227'),
+      Coordinator(name: 'Anshuman Dalai', phone: '8757599552'),
     ],
   ),
  
@@ -489,7 +490,7 @@ final List<Event> events = [
     name: "King's Conquest",
   image: "assets/event_poster/game4.png",
     description: "Are you ready for electrifying battle of wits where one wrong move can make or break you. We bring to you King’s Conquest a round-robin over the board rapid chess tournament that will allow to test your wits against the best. Only the strong shall prevail and the weak shall perish. So are you ready to crown yourself the next King of the 64 Squares?",
-    rules: "https://docs.google.com/document/d/1R5Bl3HyRab9LvWtLVpMnppfXs7lzwARp/edit?usp=drive_link&ouid=118260888776444936740&rtpof=true&sd=true",
+    rules: "https://docs.google.com/document/d/1tpMUxN5AM17rYuSrEv3y4ZiHUPTswH6y/edit?usp=drive_link&ouid=116690350005654047734&rtpof=true&sd=true",
     minTeamSize: 1,
     maxTeamSize: 1,
     iiestFee: 30,
