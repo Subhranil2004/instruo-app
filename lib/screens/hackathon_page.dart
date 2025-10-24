@@ -11,17 +11,17 @@ class Hackathon extends StatelessWidget {
     const hackathonName = "INSTRUO Hackathon";
     const hackathonImage = "assets/hackathon.jpeg"; // update path
     const hackathonDescription = """
-🎓 **Exclusive for IIEST Shibpur Students!**
+🎓 Exclusive for IIEST Shibpur Students!
 
-HackSprint Kolkata Edition — National Level Hackathon is happening at **IIEST Shibpur, West Bengal** on **1st & 2nd November 2025**, powered by **SR Technologies**.
+HackSprint Kolkata Edition — National Level Hackathon is happening at IIEST Shibpur, West Bengal on 1st & 2nd November 2025, powered by SR Technologies.
 
-🔥 **Get an exclusive 50% discount on your registration — only for IIEST students!**
+🔥 Get an exclusive 50% discount on your registration — only for IIEST students!
 
-🎯 **Workshops:**
+🎯 Workshops:
 • Artificial Intelligence / Machine Learning  
 • MERN Stack Development with AI Integration
 
-💡 **Hackathon Domains:**
+💡 Hackathon Domains:
 AI & ML | Generative AI | MERN + AI | Healthcare | Open Innovation
 """;
 

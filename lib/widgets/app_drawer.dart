@@ -120,7 +120,6 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
 
-          // ✅ Navigation Items
           _buildDrawerItem(
             context,
             icon: Icons.home,
@@ -164,7 +163,7 @@ class _AppDrawerState extends State<AppDrawer> {
           ),
           _buildDrawerItem(
             context,
-            icon: Icons.star,
+            icon: Icons.computer,
             text: "Hackathon",
             onTap: () => _onTapNavigate(
               context,
