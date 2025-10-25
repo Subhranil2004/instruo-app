@@ -39,6 +39,8 @@ class _FifaRegisterPageState extends State<FifaRegisterPage> {
   bool _isLoadingUsers = true;
   bool _showSearch = false;
   bool _isRegistering = false;
+  // Controls whether the payment details panel is expanded
+  bool _paymentExpanded = false;
 
   @override
   void initState() {
@@ -223,8 +225,10 @@ class _FifaRegisterPageState extends State<FifaRegisterPage> {
       // If payment is required (amount > 0) ensure a payment screenshot is provided
       if (totalAmount > 0 && _selectedPaymentSSFile == null) {
         // show snackbar error and abort
+        // open payment panel so user can upload
+        setState(() { _paymentExpanded = true; });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment of ₹$totalAmount required for non-IIESTIAN members. Please upload payment screenshot.')),
+          SnackBar(content: Text('Payment of ₹$totalAmount required. Please upload payment screenshot.')),
         );
         setState(() { _isRegistering = false; });
         return;
@@ -233,8 +237,9 @@ class _FifaRegisterPageState extends State<FifaRegisterPage> {
       String? paymentDownloadUrl;
       // If a new payment ss is selected, upload it
       if (_selectedPaymentSSFile != null) {
-        final safeName = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
-        String filePath = 'payments/${safeName}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final safeTeam = (_teamNameController.text.isNotEmpty) ? _teamNameController.text.replaceAll(' ', '_') : currentUser!.uid;
+        final safeEvent = widget.event.name.replaceAll(RegExp(r"[^A-Za-z0-9_]"), '_').replaceAll(' ', '_');
+        String filePath = 'payments/${safeEvent}_${safeTeam}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final storageRef = firebase_storage.FirebaseStorage.instance.ref().child(filePath);
 
         try {
@@ -365,7 +370,11 @@ class _FifaRegisterPageState extends State<FifaRegisterPage> {
 
     // If payment is required ensure a payment screenshot is provided BEFORE showing confirmation
     if (totalAmount > 0 && _selectedPaymentSSFile == null) {
-      displayMessageToUser('Payment of ₹$totalAmount required. Please upload payment screenshot.', context, durationSeconds: 4);
+      // open payment panel for user to upload
+      displayMessageToUser('Payment of ₹$totalAmount required. Please upload payment screenshot.', context, durationSeconds: 1, isError: false);
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() { _paymentExpanded = true; });
+      });
       return;
     }
 
@@ -765,54 +774,86 @@ class _FifaRegisterPageState extends State<FifaRegisterPage> {
                           ],
                         ],
                         const SizedBox(height: 32),
-                        // UPI QR Code
-                        _buildSectionHeader(
-                          context,
-                          "Payment Details",
-                          Icons.payment,
-                        ),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            'assets/upi_qr.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // Payment Screenshot upload (for non-IIESTIAN payments)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        // Payment Details - collapsible (manual control so it can be opened programmatically)
+                        InkWell(
+                          onTap: () => setState(() { _paymentExpanded = !_paymentExpanded; }),
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    "Upload Payment Screenshot:",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  IconButton(
-                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
-                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
-                                        : () => _pickPaymentImage(ImageSource.gallery),
-                                    icon: const Icon(Icons.upload_file, color: AppTheme.primaryBlue, size: 24.0),
-                                  ),
-                                  const Text('or'),
-                                  IconButton(
-                                    onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
-                                        ? () => displayMessageToUser("Please remove the existing payment screenshot before uploading a new one.", context)
-                                        : () => _pickPaymentImage(ImageSource.camera),
-                                    icon: Icon(Icons.camera_alt_outlined, color: AppTheme.primaryBlue, size: 24.0),
-                                  ),
-                                ],
+                              Icon(Icons.payment, color: AppTheme.primaryBlue),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Payment Details',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppTheme.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                              const SizedBox(height: 12),
-                              _buildPaymentSSPreview(),
+                              const Spacer(),
+                              Icon(_paymentExpanded ? Icons.expand_less : Icons.expand_more, color: AppTheme.primaryBlue),
                             ],
                           ),
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Please make the payment here (non-IIESTians)",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 12),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    'assets/upi_qr.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "Upload Payment Screenshot:",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                              ? () => displayMessageToUser(
+                                                  "Please remove the existing payment screenshot before uploading a new one.",
+                                                  context)
+                                              : () => _pickPaymentImage(ImageSource.gallery),
+                                          icon: const Icon(Icons.upload_file, color: AppTheme.primaryBlue, size: 24.0),
+                                        ),
+                                        const Text('or'),
+                                        IconButton(
+                                          onPressed: (_selectedPaymentSSFile != null || _isUploadingPaymentSS)
+                                              ? () => displayMessageToUser(
+                                                  "Please remove the existing payment screenshot before uploading a new one.",
+                                                  context)
+                                              : () => _pickPaymentImage(ImageSource.camera),
+                                          icon: const Icon(Icons.camera_alt_outlined, color: AppTheme.primaryBlue, size: 24.0),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                _buildPaymentSSPreview(),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _paymentExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 200),
                         ),
 
                         const SizedBox(height: 16),

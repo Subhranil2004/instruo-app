@@ -46,3 +46,6 @@ app.*.map.json
 
 
 /android/app/build.gradle.kts
+
+key.properties
+manifest.json

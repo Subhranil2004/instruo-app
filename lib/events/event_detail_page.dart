@@ -278,7 +278,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       // If event is in Robotics category or one of specific events, direct to GForm
                       final eventId = widget.event.id;
                       final eventCategory = widget.event.category.toLowerCase();
-                      const gformEvents = ['gen1', 'gen3', 'tech7'];
+                      const gformEvents = ['gen1', 'gen3', 'tech7', 'game3', 'game2'];
                       const separateformEvents = ['tech8', 'game1', 'game4'];
                       const physicalRegnEvents = ['gen12', 'game5'];
 
