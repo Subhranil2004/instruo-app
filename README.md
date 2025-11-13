@@ -2,8 +2,9 @@
 
 > Copied from a group project hosted in [this](https://github.com/Harshit-Kr01/InstruoApplication) GitHub repo 
 
-## In-app updates workflow:
-
+<details>
+<summary><h3>In-app updates workflow</h3> (click to expand)</summary>
+  
 - Add permission to `android/app/src/main/AndroidManifest.xml`:
   ```xml
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -59,4 +60,4 @@
   
   }
   ```
-
+</details>
