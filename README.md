@@ -1,6 +1,6 @@
 ### Cross-platform Flutter + Firebase mobile application
 
-> Copied from a group project hosted in [this](https://github.com/Harshit-Kr01/InstruoApplication) GitHub repo 
+> Forked from a group project hosted in [this](https://github.com/Harshit-Kr01/InstruoApplication) GitHub repo 
 
 <details>
 <summary><h3>In-app updates workflow</h3> (click to expand)</summary>
